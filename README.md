@@ -31,20 +31,30 @@ A default and a paranoid profile are available for each.
 
 # How to Use the package
 
-example basic usage:
+## example basic usage:
 
 1. Instanciate a password hashing profile:
-```p := passwd.New(passwd.Argon2idCommon)```
+```
+   p := passwd.New(passwd.Argon2idCommon)
+````
+
 2. Hash your password:
-```hashed, err := p.Hash( []byte("mypassword") )```
+```
+   hashed, err := p.Hash( []byte("mypassword") )
+````
+
 3. done.
 
 
-example password check/comparison :
+## example password check/comparison :
 
 1. check a hash against a password:
-```err := passwd.Compare(hashedpassword, []byte("password"))```
+```
+   err := passwd.Compare(hashedpassword, []byte("password"))
+```
+
 2. done.
+
 
 # Status
 
