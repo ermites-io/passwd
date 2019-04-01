@@ -143,7 +143,7 @@ func NewHash(hashed []byte) *Profile {
 func Compare(hashed, password []byte) error {
 	//var version, stuff string
 	//var num int
-	fmt.Printf("HASHED: %s\n", hashed)
+	//fmt.Printf("HASHED: %s\n", hashed)
 	// FIELDS: ["2s" "ssSDTbMpkLQtIhZ558igpO" "16" "65536" "4" "32" "J/xbjklkXIhBqZ3FAF4t5xWu4rTjxr79eIjc28VYuqK"]
 	// field0 : sig
 	// field1 : salt
@@ -157,14 +157,14 @@ func Compare(hashed, password []byte) error {
 		return err
 	}
 
-	fmt.Printf("PARAM TYPE: %T\n", params)
+	//fmt.Printf("PARAM TYPE: %T\n", params)
 	switch v := params.(type) {
 	case BcryptParams:
 		return v.Compare(hashed, password)
 	case ScryptParams:
 		return v.Compare(hashed, password)
 	case Argon2Params:
-		fmt.Printf("ARGON2 PARAM FOUND\n")
+		//fmt.Printf("ARGON2 PARAM FOUND\n")
 		return v.Compare(hashed, password)
 	}
 

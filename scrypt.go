@@ -40,7 +40,7 @@ func newScryptParamsFromFields(fields []string) (*ScryptParams, error) {
 		return nil, fmt.Errorf("invalid hash")
 	}
 
-	fmt.Printf("ARGON FIELD: %q\n", fields)
+	//fmt.Printf("ARGON FIELD: %q\n", fields)
 	// salt
 	salt, err := base64Decode([]byte(fields[0])) // process the salt
 	if err != nil {
@@ -140,13 +140,13 @@ func (p *ScryptParams) generateFromPassword(password []byte) ([]byte, error) {
 }
 
 func (p *ScryptParams) Compare(hashed, password []byte) error {
-	fmt.Printf("SCRYPT COMPARE: \n")
+	//fmt.Printf("SCRYPT COMPARE: \n")
 	compared, err := p.generateFromParams(password)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("COMPARE %s vs %s\n", hashed, compared)
+	//fmt.Printf("COMPARE %s vs %s\n", hashed, compared)
 
 	if subtle.ConstantTimeCompare(compared, hashed) == 1 {
 		return nil
