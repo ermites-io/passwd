@@ -1,3 +1,5 @@
+// +build go1.11
+
 package main
 
 import (
@@ -40,9 +42,9 @@ func main() {
 			if err != nil {
 				log.Fatalf("hashing error: %v\n", err)
 			}
-			fmt.Printf("[%d] password: %s\nhashed: %s\n", idx, passwordStr, h)
+			fmt.Printf("[%d] password: '%s' hashed: '%s'\n", idx, passwordStr, h)
 			if len(*checkFlag) > 0 {
-				fmt.Printf("[%d] is %s the passwd? %v\n", idx, passwordStr, passwd.Compare([]byte(*checkFlag), []byte(passwordStr)))
+				fmt.Printf("[%d] is '%s' the passwd? %v\n", idx, passwordStr, passwd.Compare([]byte(*checkFlag), []byte(passwordStr)))
 			}
 		}
 	}
