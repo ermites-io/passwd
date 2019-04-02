@@ -5,9 +5,9 @@ package passwd
 import "golang.org/x/crypto/bcrypt"
 
 var (
-	BcryptMinParameters    = BcryptParams{cost: bcrypt.MinCost}
-	BcryptCommonParameters = BcryptParams{cost: bcrypt.DefaultCost}
-	BcryptMaxParameters    = BcryptParams{cost: bcrypt.MaxCost}
+	//BcryptMinParameters    = BcryptParams{cost: bcrypt.MinCost}
+	BcryptCommonParameters   = BcryptParams{cost: bcrypt.DefaultCost}
+	BcryptParanoidParameters = BcryptParams{cost: bcrypt.MaxCost}
 )
 
 const (

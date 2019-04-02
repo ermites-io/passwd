@@ -13,7 +13,8 @@ import (
 
 // a simple example of passwd package usage.
 func main() {
-	var p *passwd.Profile
+	//var p *passwd.Profile
+	var profile int
 
 	scryptFlag := flag.Bool("scrypt", false, "use scrypt derivation")
 	argonFlag := flag.Bool("argon", false, "use argon derivation")
@@ -25,15 +26,18 @@ func main() {
 
 	switch {
 	case *argonFlag:
-		p = passwd.New(passwd.Argon2idCommon)
+		profile = passwd.Argon2idDefault
 	case *scryptFlag:
-		p = passwd.New(passwd.ScryptMin)
+		profile = passwd.ScryptDefault
 	case *bcryptFlag:
-		p = passwd.New(passwd.BcryptCommon)
+		profile = passwd.BcryptDefault
 	default:
 		fmt.Printf("no derivation, so nothing to do")
 		os.Exit(0)
 	}
+
+	// profile
+	p := passwd.New(profile)
 
 	fmt.Printf("argv[%d]: %q\n", len(argv), argv)
 	if len(argv) > 0 {

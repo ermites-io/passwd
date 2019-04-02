@@ -17,7 +17,15 @@ const (
 )
 
 var (
-	ScryptMinParameters = ScryptParams{
+	ScryptCommonParameters = ScryptParams{
+		n:       16,
+		r:       65536,
+		p:       4,
+		saltlen: 16,
+		keylen:  32,
+	}
+
+	ScryptParanoidParameters = ScryptParams{
 		n:       16,
 		r:       65536,
 		p:       4,

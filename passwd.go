@@ -49,15 +49,12 @@ import (
 
 // hard part will be to define those.
 const (
-	BcryptMin = iota
-	BcryptCommon
-	BcryptHardened
-	Argon2idMin
-	Argon2idCommon
-	Argon2idHardened
-	ScryptMin
-	ScryptCommon
-	ScryptHardened
+	Argon2idDefault = iota
+	Argon2idParanoid
+	ScryptDefault
+	ScryptParanoid
+	BcryptDefault
+	BcryptParanoid
 )
 
 var (
@@ -67,13 +64,12 @@ var (
 	// limiting the choice for password storage avoid shooting yourself in
 	// the foot.
 	Params = map[int]interface{}{
-		BcryptMin:        BcryptMinParameters, // might disappear, we leave for compatibility purposes?
-		BcryptCommon:     BcryptCommonParameters,
-		BcryptHardened:   BcryptMaxParameters,
-		Argon2idMin:      ArgonMinParameters,
-		Argon2idCommon:   ArgonCommonParameters,
-		Argon2idHardened: ArgonMaxParameters,
-		ScryptMin:        ScryptMinParameters,
+		Argon2idDefault:  ArgonCommonParameters,
+		Argon2idParanoid: ArgonParanoidParameters,
+		ScryptDefault:    ScryptCommonParameters,
+		ScryptParanoid:   ScryptParanoidParameters,
+		BcryptDefault:    BcryptCommonParameters,
+		BcryptParanoid:   BcryptParanoidParameters,
 	}
 )
 

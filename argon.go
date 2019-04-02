@@ -25,26 +25,28 @@ const (
 )
 
 var (
-	ArgonMinParameters = Argon2Params{
+	/*
+		ArgonMinParameters = Argon2Params{
+			version: ARGON2ID,
+			time:    1,
+			memory:  64 * 1024,
+			thread:  8,
+			saltlen: 16,
+			keylen:  16,
+		}
+	*/
+	ArgonCommonParameters = Argon2Params{
 		version: ARGON2ID,
 		time:    1,
 		memory:  64 * 1024,
 		thread:  8,
 		saltlen: 16,
-		keylen:  16,
-	}
-	ArgonCommonParameters = Argon2Params{
-		version: ARGON2ID,
-		time:    2,
-		memory:  64 * 1024,
-		thread:  8,
-		saltlen: 16,
 		keylen:  32,
 	}
-	ArgonMaxParameters = Argon2Params{
+	ArgonParanoidParameters = Argon2Params{
 		version: ARGON2ID,
 		time:    2,
-		memory:  256 * 1024,
+		memory:  512 * 1024,
 		thread:  16,
 		saltlen: 32,
 		keylen:  32,
@@ -99,14 +101,6 @@ func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 	}
 	keylen := uint32(keylenint)
 
-	/*
-		key, err := base64Decode([]byte(fields[5]))
-		if err != nil {
-			// XXX check that len matches..
-			return nil, nil, err
-		}
-	*/
-
 	ap := Argon2Params{
 		version: ARGON2ID, // default for now..
 		time:    time,
@@ -122,7 +116,7 @@ func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 
 // function that validate custom parameters and minimal security is ok.
 // will upgrade over the years
-func (p *Argon2Params) Validate(min *Argon2Params) error {
+func (p *Argon2Params) validate(min *Argon2Params) error {
 	return nil
 }
 
