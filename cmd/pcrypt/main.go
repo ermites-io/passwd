@@ -48,7 +48,9 @@ func main() {
 			}
 			fmt.Printf("[%d] password: '%s' hashed: '%s'\n", idx, passwordStr, h)
 			if len(*checkFlag) > 0 {
-				fmt.Printf("[%d] is '%s' the passwd? %v\n", idx, passwordStr, passwd.Compare([]byte(*checkFlag), []byte(passwordStr)))
+				fmt.Printf("[%d] is '%s' the passwd? %v\n",
+					idx, passwordStr,
+					passwd.Compare([]byte(*checkFlag), []byte(passwordStr)))
 			}
 		}
 	}
