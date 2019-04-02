@@ -97,14 +97,51 @@ func (p *Profile) Hash(password []byte) ([]byte, error) {
 
 // as it's a Profile method, we expect the hashed version to be already loaded
 // with NewHash(hash)
-func (p *Profile) Compare(password []byte) error {
-	return nil
+func (p *Profile) Compare(hashed, password []byte) error {
+	salt, err := parseFromHashToSalt(hashed)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return err
+	}
+
+	switch v := p.params.(type) {
+	case BcryptParams:
+		return v.Compare(hashed, password)
+	case ScryptParams:
+		v.salt = salt
+		return v.Compare(hashed, password)
+	case Argon2Params:
+		v.salt = salt
+		//fmt.Printf("ARGON2 PARAM FOUND\n")
+		return v.Compare(hashed, password)
+	}
+
+	return fmt.Errorf("mismatch")
 }
 
 func New(profile int) *Profile {
 	p := Profile{
 		t:      profile,
 		params: Params[profile],
+	}
+	return &p
+}
+
+func NewPrivate(profile int) *Profile {
+	params := Params[profile]
+
+	switch v := params.(type) {
+	case BcryptParams:
+		v.private = true
+	case ScryptParams:
+		v.private = true
+	case Argon2Params:
+		v.private = true
+	}
+
+	p := Profile{
+		t:      profile,
+		params: params,
 	}
 	return &p
 }
@@ -130,10 +167,6 @@ func NewCustom(params interface{}) *Profile {
 		fmt.Printf("Unsupported\n")
 		panic("unsupported")
 	}
-}
-
-func NewHash(hashed []byte) *Profile {
-	return nil
 }
 
 func Compare(hashed, password []byte) error {

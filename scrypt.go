@@ -41,6 +41,7 @@ type ScryptParams struct {
 	salt    []byte // my salt..
 	saltlen uint32 // 128 bits min.
 	keylen  uint32 // 128 bits min.
+	private bool   // are parameters private
 }
 
 func newScryptParamsFromFields(fields []string) (*ScryptParams, error) {
@@ -104,17 +105,20 @@ func (p *ScryptParams) getSalt() error {
 //func (p *ScryptParams) generateFromPassword(password []byte) ([]byte, error) {
 func (p *ScryptParams) generateFromParams(password []byte) ([]byte, error) {
 	var hash bytes.Buffer
+	var params string
 
 	// need to b64.
 	//salt64 := base64.StdEncoding.EncodeToString(salt)
 	salt64 := base64Encode(p.salt)
 
 	// params
-	params := fmt.Sprintf("%c%d%c%d%c%d%c%d",
-		separatorRune, p.n,
-		separatorRune, p.r,
-		separatorRune, p.p,
-		separatorRune, p.keylen)
+	if p.private {
+		params = fmt.Sprintf("%c%d%c%d%c%d%c%d",
+			separatorRune, p.n,
+			separatorRune, p.r,
+			separatorRune, p.p,
+			separatorRune, p.keylen)
+	}
 	id := idScrypt
 
 	key, err := scrypt.Key(password, p.salt, int(p.r), int(p.n), int(p.p), int(p.keylen))

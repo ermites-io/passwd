@@ -57,3 +57,26 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 	}
 	return nil, fmt.Errorf("invalid")
 }
+
+func parseFromHashToSalt(hashed []byte) ([]byte, error) {
+	fields := strings.FieldsFunc(string(hashed), token)
+	if len(fields) == 0 {
+		return nil, fmt.Errorf("invalid format")
+	}
+	switch fields[0] {
+	case idBcrypt:
+		return nil, nil
+	case idScrypt:
+		fallthrough
+	case idArgon2i:
+		fallthrough
+	case idArgon2id:
+		salt, err := base64Decode([]byte(fields[1])) // process the salt
+		if err != nil {
+			return nil, err
+		}
+		return salt, nil
+	}
+	return nil, fmt.Errorf("invalid format")
+
+}

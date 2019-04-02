@@ -15,7 +15,8 @@ const (
 )
 
 type BcryptParams struct {
-	cost int
+	cost    int
+	private bool // are parameters private
 }
 
 func (bp *BcryptParams) generateFromPassword(password []byte) ([]byte, error) {

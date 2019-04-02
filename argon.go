@@ -61,7 +61,10 @@ type Argon2Params struct {
 	salt    []byte // on compare only..
 	saltlen uint32
 	keylen  uint32
+	private bool // are parameters private
 }
+
+// [0] password: 'prout' hashed: '$2id$aiOE.rPFUFkkehxc6utWY.$1$65536$8$32$Wv1IMP6xwaqVaQGOX6Oxe.eSEbozeRJLzln8ZlthZfS'
 
 func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 	if len(fields) != 6 {
@@ -138,7 +141,7 @@ func (p *Argon2Params) Compare(hashed, password []byte) error {
 
 func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 	var key []byte
-	var id string
+	var id, params string
 	var hash bytes.Buffer
 
 	// need to b64.
@@ -146,11 +149,13 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 	salt64 := base64Encode(p.salt)
 
 	// params
-	params := fmt.Sprintf("%c%d%c%d%c%d%c%d",
-		separatorRune, p.time,
-		separatorRune, p.memory,
-		separatorRune, p.thread,
-		separatorRune, p.keylen)
+	if p.private {
+		params = fmt.Sprintf("%c%d%c%d%c%d%c%d",
+			separatorRune, p.time,
+			separatorRune, p.memory,
+			separatorRune, p.thread,
+			separatorRune, p.keylen)
+	}
 
 	switch p.version {
 	case ARGON2I:
