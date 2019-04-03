@@ -17,21 +17,52 @@ const (
 )
 
 var (
+	/*
+		https://tools.ietf.org/html/rfc7914
+
+		Users of scrypt can tune the parameters N, r, and p according to the
+		amount of memory and computing power available, the latency-bandwidth
+		product of the memory subsystem, and the amount of parallelism
+		desired.  At the current time, r=8 and p=1 appears to yield good
+		results, but as memory latency and CPU parallelism increase, it is
+		likely that the optimum values for both r and p will increase.  Note
+		also that since the computations of SMix are independent, a large
+		value of p can be used to increase the computational cost of scrypt
+		...
+		N:
+		The CPU/Memory cost parameter N ("costParameter") must be larger than 1,
+		a power of 2, and less than 2 ^ (128 * r / 8).
+
+		R:
+		The parameter r ("blockSize") specifies the block size.
+
+		P:
+		The parallelization parameter p ("parallelizationParameter") is a positive integer
+		less than or equal to ((2^32-1) * 32) / (128 * r)
+
+		https://godoc.org/golang.org/x/crypto/scrypt :
+
+		The recommended parameters for interactive logins as of 2017 are N=32768, r=8 and p=1.
+		The parameters N, r, and p should be increased as memory latency and CPU parallelism increases;
+		consider setting N to the highest power of 2 you can derive within 100 milliseconds.
+		Remember to get a good random salt.
+
+	*/
 	ScryptCommonParameters = ScryptParams{
-		n:       16,
-		r:       65536,
-		p:       4,
+		n:       65536,
+		r:       8,
+		p:       1,
 		saltlen: 16,
 		keylen:  32,
 		private: false,
 	}
 
 	ScryptParanoidParameters = ScryptParams{
-		n:       16,
-		r:       65536,
-		p:       4,
-		saltlen: 16,
-		keylen:  32,
+		n:       65536,
+		r:       32,
+		p:       2,
+		saltlen: 32,
+		keylen:  64,
 		private: false,
 	}
 )

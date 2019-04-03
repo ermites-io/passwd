@@ -18,39 +18,51 @@ const (
 )
 
 const (
-	saltLen    = 16
-	tagLen     = 32
 	idArgon2i  = "2i"
 	idArgon2id = "2id"
 )
 
 var (
+
 	/*
-		ArgonMinParameters = Argon2Params{
-			version: ARGON2ID,
-			time:    1,
-			memory:  64 * 1024,
-			thread:  8,
-			saltlen: 16,
-			keylen:  16,
-		}
+		not everything is clear in the draft:
+		https://datatracker.ietf.org/doc/draft-irtf-cfrg-argon2/?include_text=1
+
+		however
+
+		9.4.  Recommendations
+
+		The Argon2id variant with t=1 and maximum available memory is
+		recommended as a default setting for all environments.  This setting
+		is secure against side-channel attacks and maximizes adversarial
+		costs on dedicated bruteforce hardware.
+
+		we're running with concurrent authentication requests, I cannot suck as much memory,
+		default safety will be 64MB in cloud environment.
+
+		if you're using this for storing password for a more dedicated resource and you wish to put pain
+		on attackers, go for the paranoid or a custom definition.
+
+		the purpose of the package is to help with comparison and hashing + format, nothing more nothing less
+
 	*/
 	ArgonCommonParameters = Argon2Params{
 		version: ARGON2ID,
 		time:    1,
 		memory:  64 * 1024,
-		thread:  8,
+		thread:  4,
 		saltlen: 16,
 		keylen:  32,
 		private: false,
 	}
+
 	ArgonParanoidParameters = Argon2Params{
 		version: ARGON2ID,
 		time:    2,
-		memory:  512 * 1024,
+		memory:  256 * 1024,
 		thread:  16,
 		saltlen: 32,
-		keylen:  32,
+		keylen:  64,
 		private: false,
 	}
 )
@@ -67,7 +79,6 @@ type Argon2Params struct {
 }
 
 // [0] password: 'prout' hashed: '$2id$aiOE.rPFUFkkehxc6utWY.$1$65536$8$32$Wv1IMP6xwaqVaQGOX6Oxe.eSEbozeRJLzln8ZlthZfS'
-
 func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 	if len(fields) != 6 {
 		return nil, fmt.Errorf("invalid hash")
@@ -121,6 +132,7 @@ func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 
 // function that validate custom parameters and minimal security is ok.
 // will upgrade over the years
+// XXX TODO
 func (p *Argon2Params) validate(min *Argon2Params) error {
 	return nil
 }
