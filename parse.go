@@ -63,6 +63,7 @@ func parseFromHashToSalt(hashed []byte) ([]byte, error) {
 	if len(fields) == 0 {
 		return nil, fmt.Errorf("invalid format")
 	}
+	fmt.Printf("prout fields: %q\n", fields)
 	switch fields[0] {
 	case idBcrypt:
 		return nil, nil

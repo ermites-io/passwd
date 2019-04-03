@@ -23,6 +23,7 @@ var (
 		p:       4,
 		saltlen: 16,
 		keylen:  32,
+		private: false,
 	}
 
 	ScryptParanoidParameters = ScryptParams{
@@ -31,6 +32,7 @@ var (
 		p:       4,
 		saltlen: 16,
 		keylen:  32,
+		private: false,
 	}
 )
 
@@ -112,7 +114,7 @@ func (p *ScryptParams) generateFromParams(password []byte) ([]byte, error) {
 	salt64 := base64Encode(p.salt)
 
 	// params
-	if p.private {
+	if !p.private {
 		params = fmt.Sprintf("%c%d%c%d%c%d%c%d",
 			separatorRune, p.n,
 			separatorRune, p.r,

@@ -42,6 +42,7 @@ var (
 		thread:  8,
 		saltlen: 16,
 		keylen:  32,
+		private: false,
 	}
 	ArgonParanoidParameters = Argon2Params{
 		version: ARGON2ID,
@@ -50,6 +51,7 @@ var (
 		thread:  16,
 		saltlen: 32,
 		keylen:  32,
+		private: false,
 	}
 )
 
@@ -148,8 +150,9 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 	//salt64 := base64.StdEncoding.EncodeToString(salt)
 	salt64 := base64Encode(p.salt)
 
+	fmt.Printf("private: %v\n", p.private)
 	// params
-	if p.private {
+	if !p.private {
 		params = fmt.Sprintf("%c%d%c%d%c%d%c%d",
 			separatorRune, p.time,
 			separatorRune, p.memory,

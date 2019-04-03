@@ -133,10 +133,13 @@ func NewPrivate(profile int) *Profile {
 	switch v := params.(type) {
 	case BcryptParams:
 		v.private = true
+		params = v
 	case ScryptParams:
 		v.private = true
+		params = v
 	case Argon2Params:
 		v.private = true
+		params = v
 	}
 
 	p := Profile{

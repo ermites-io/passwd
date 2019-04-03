@@ -37,8 +37,8 @@ func main() {
 	}
 
 	// profile
+	// PUBLIC PARAMETERS
 	p := passwd.New(profile)
-
 	fmt.Printf("argv[%d]: %q\n", len(argv), argv)
 	if len(argv) > 0 {
 		for idx, passwordStr := range argv {
@@ -51,6 +51,24 @@ func main() {
 				fmt.Printf("[%d] is '%s' the passwd? %v\n",
 					idx, passwordStr,
 					passwd.Compare([]byte(*checkFlag), []byte(passwordStr)))
+			}
+		}
+	}
+
+	// PRIVATE PARAMETERS
+	p = passwd.NewPrivate(profile)
+	fmt.Printf("argv[%d]: %q\n", len(argv), argv)
+	if len(argv) > 0 {
+		for idx, passwordStr := range argv {
+			h, err := p.Hash([]byte(passwordStr))
+			if err != nil {
+				log.Fatalf("hashing error: %v\n", err)
+			}
+			fmt.Printf("[%d] password: '%s' hashed: '%s'\n", idx, passwordStr, h)
+			if len(*checkFlag) > 0 {
+				fmt.Printf("[%d] is '%s' the passwd? %v\n",
+					idx, passwordStr,
+					p.Compare([]byte(*checkFlag), []byte(passwordStr)))
 			}
 		}
 	}
