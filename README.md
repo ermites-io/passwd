@@ -31,7 +31,18 @@ A default and a paranoid profile are available for each.
 
 # How to Use the package
 
-## example basic usage:
+## Public vs Private parameters
+
+You might decide you have a private usage of the stored password and as such hide parameters
+you used to derive the password since you have no interaction with a system that do not use this package, etc..
+
+Public parameters allows you to use the hashed password to directly provide a simple Compare() function.
+Private parameters requires you to say what parameters you use AND to call the Compare() method of the profile.
+
+Attacker would have to not only grab the stored password, but also to guess the parameters you use
+with your key derivation in order to start cracking it.
+
+## example basic usage with public parameters:
 
 Instanciate a password hashing profile:
 ```
@@ -41,9 +52,12 @@ Instanciate a password hashing profile:
 Hash your password:
 ```
    hashed, err := p.Hash( []byte("mypassword") )
-````
+```
 
 done, that's it, now you store `hashed`
+```
+   hashed: '$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6'
+```
 
 
 ## example password check/comparison :
@@ -55,6 +69,34 @@ check a hash against a password:
 
 done.
 
+
+## example basic usage with private parameters:
+
+Instanciate a password hashing profile:
+```
+   p := passwd.NewPrivate(passwd.Argon2idCommon)
+````
+
+Hash your password:
+```
+   hashed, err := p.Hash( []byte("mypassword") )
+```
+
+done, that's it, now you store `hashed`
+```
+   hashed: $2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK
+```
+
+
+## example password check/comparison :
+
+check a hash against a password:
+```
+   p := passwd.NewPrivate(passwd.Argon2idCommon)
+   err := p.Compare(hashedpassword, []byte("password"))
+```
+
+done.
 
 # Status
 
