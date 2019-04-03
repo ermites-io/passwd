@@ -46,7 +46,7 @@ with your key derivation in order to start cracking it.
 
 Instanciate a password hashing profile:
 ```
-   p := passwd.New(passwd.Argon2idCommon)
+   p := passwd.New(passwd.Argon2idDefault)
 ````
 
 Hash your password:
@@ -74,7 +74,7 @@ done.
 
 Instanciate a password hashing profile:
 ```
-   p := passwd.NewPrivate(passwd.Argon2idCommon)
+   p := passwd.NewPrivate(passwd.Argon2idDefault)
 ````
 
 Hash your password:
@@ -92,7 +92,7 @@ done, that's it, now you store `hashed`
 
 check a hash against a password:
 ```
-   p := passwd.NewPrivate(passwd.Argon2idCommon)
+   p := passwd.NewPrivate(passwd.Argon2idDefault)
    err := p.Compare(hashedpassword, []byte("password"))
 ```
 
