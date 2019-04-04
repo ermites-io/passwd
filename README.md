@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/unix4fun/passwd)](https://goreportcard.com/report/github.com/unix4fun/passwd)
+
 # passwd
 A simple golang password hashing package
 
