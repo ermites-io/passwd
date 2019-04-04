@@ -94,7 +94,7 @@ done, that's it, now you store `hashed`
 
 check a hash against a password:
 ```
-   p := passwd.NewPrivate(passwd.Argon2idDefault)
+   p := passwd.NewMasked(passwd.Argon2idDefault)
    err := p.Compare(hashedpassword, []byte("password"))
 ```
 
