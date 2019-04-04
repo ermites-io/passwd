@@ -6,44 +6,43 @@ A simple golang password hashing package
 
 # Description
 
-A common problem to solve is storing passwords at rest, mainly for authentication and similar use cases.
-A common response is to encrypt the password using a key derivation algorithm in order to resist offline attacks 
-on the hashed password, such as: 
-- exhaustive search
-- dictionnary attacks
-- rainbow tables
-- etc..
-
 New "password hashing" algorithms (PHC) have emerged in order to counter the increase in hardware assets
-available to crack those passwords easily when they are stolen.
+available to crack passwords easily when they are stolen.
 
 Those new algorithms increase the cost of an attack and slow down the discovery of the original password.
-Unfortunately they requires various complex parameters to be used properly.
+Unfortunately they requires various non-trivial parameters to be used properly.
 
 This package attempts to provide a safe and easy interface to produce/verify a hashed password,
 while giving the ability to tune for specific/custom needs if necessary.
 
-Choices are limited on purpose, to keep things simple and to avoid a user to shoot himself in the foot.
 3 algorithms are implemented:
 
-- bcrypt (using x/crypto/bcrypt)
+- bcrypt (using x/crypto/bcrypt, FOR LEGACY reasons)
 - scrypt (using x/crypto/scrypt)
 - argon2id (using x/crypto/argon2)
 
-A default and a paranoid profile are available for each.
+(to keep things simple and to avoid a user to shoot himself in the foot)
+Parameters choices are limited and translated into static "profiles":
+- Default
+- Paranoid
+(as it is WIP, it might switch to 3 profiles based on usage needs like : interactive, default, paranoid)
 
 # How to Use the package
 
-## Public vs Private parameters
+## Public vs Masked parameters
 
-You might decide you have a private usage of the stored password and as such hide parameters
-you used to derive the password since you have no interaction with a system that do not use this package, etc..
+Commonly password hashing includes hashing parameters in order to make it easy for interoperability.
 
-Public parameters allows you to use the hashed password to directly provide a simple Compare() function.
-Private parameters requires you to say what parameters you use AND to call the Compare() method of the profile.
+But you might decide you don't interoperate with other systems and you control your authentication mechanism,
+as such you might be willing to make things slightly more annoying for an attacker reaching your stored password 
+by "masking" your parameters (instead of embedding them in the resulting hash)
+
+Public parameters allows you to use the hashed password to directly provide a simple passwd.Compare() function.
+Masked parameters requires you to say what parameters you use AND to call the (p \*Profile).Compare() method 
+of the profile.
 
 Attacker would have to not only grab the stored password, but also to guess the parameters you use
-with your key derivation in order to start cracking it.
+with your key derivation in order to attack it offline.
 
 ## example basic usage with public parameters:
 
@@ -73,11 +72,11 @@ check a hash against a password:
 done.
 
 
-## example basic usage with private parameters:
+## example basic usage with masked parameters:
 
 Instanciate a password hashing profile:
 ```
-   p := passwd.NewPrivate(passwd.Argon2idDefault)
+   p := passwd.NewMasked(passwd.Argon2idDefault)
 ````
 
 Hash your password:
@@ -91,7 +90,7 @@ done, that's it, now you store `hashed`
 ```
 
 
-## example password check/comparison :
+## example masked parameters password check/comparison :
 
 check a hash against a password:
 ```
@@ -103,5 +102,7 @@ done.
 
 # Status
 
-This is work in progress and the default are still being worked out tuned.
-Work In Progress / Readme, Documentation & Examples coming..
+This is work in progress and the default are still being worked out, researched and tuned.
+Feedback is always welcome.
+
+An example tool/usage lies in cmd/pcrypt in this repository, hopefully it helps understanding how to use this package.
