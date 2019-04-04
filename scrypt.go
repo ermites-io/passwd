@@ -80,7 +80,7 @@ type ScryptParams struct {
 
 func newScryptParamsFromFields(fields []string) (*ScryptParams, error) {
 	if len(fields) != 6 {
-		return nil, fmt.Errorf("invalid hash")
+		return nil, ErrParse
 	}
 
 	//fmt.Printf("ARGON FIELD: %q\n", fields)

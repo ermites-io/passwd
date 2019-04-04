@@ -3,7 +3,6 @@
 package passwd
 
 import (
-	"fmt"
 	"strings"
 	"unicode"
 
@@ -18,8 +17,6 @@ const (
 
 var (
 	rangeTableSeparator = rangetable.New(separatorRune)
-
-	ErrParse = fmt.Errorf("parse error")
 )
 
 func token(c rune) bool {
@@ -63,7 +60,7 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 func parseFromHashToSalt(hashed []byte) ([]byte, error) {
 	fields := strings.FieldsFunc(string(hashed), token)
 	if len(fields) == 0 {
-		return nil, fmt.Errorf("invalid format")
+		return nil, ErrParse
 	}
 	switch fields[0] {
 	case idBcrypt:

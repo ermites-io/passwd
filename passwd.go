@@ -61,9 +61,6 @@ const (
 )
 
 var (
-	ErrUnsupported = fmt.Errorf("unsupported")
-	ErrMismatch    = fmt.Errorf("mismatch")
-
 	// XXX not sure yet it's the right approach
 	// limiting the choice for password storage avoid shooting yourself in
 	// the foot.
@@ -130,7 +127,7 @@ func (p *Profile) Compare(hashed, password []byte) error {
 		return v.compare(hashed, password)
 	}
 
-	return fmt.Errorf("mismatch")
+	return ErrMismatch
 }
 
 // New instanciate a new Profile
@@ -220,7 +217,7 @@ func Compare(hashed, password []byte) error {
 		return v.compare(hashed, password)
 	}
 
-	return fmt.Errorf("mismatch")
+	return ErrMismatch
 }
 
 /*

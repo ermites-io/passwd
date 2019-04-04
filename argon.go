@@ -94,7 +94,7 @@ type Argon2Params struct {
 // [0] password: 'prout' hashed: '$2id$aiOE.rPFUFkkehxc6utWY.$1$65536$8$32$Wv1IMP6xwaqVaQGOX6Oxe.eSEbozeRJLzln8ZlthZfS'
 func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 	if len(fields) != 6 {
-		return nil, fmt.Errorf("invalid hash")
+		return nil, ErrParse
 	}
 
 	//fmt.Printf("ARGON FIELD: %q\n", fields)
