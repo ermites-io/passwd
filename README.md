@@ -102,10 +102,10 @@ done.
 
 # Status
 
-This package exclusively uses crypto algorithm implementations shipped the go standard library (located in ```x/crypto/```)
+This package exclusively uses crypto algorithm implementations shipped in go extended crypto packages (located in ```x/crypto/```)
 
-This is work in progress and the default are still being worked out, researched and tuned.
-Feedback is always welcome.
+This is work in progress and the default are still being worked out.
+Feedback is welcome.
 
 An example tool/usage lies in ```cmd/pcrypt``` in this repository, hopefully it helps understanding how to use this package.
 
