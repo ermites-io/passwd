@@ -13,8 +13,10 @@ import (
 )
 
 const (
-	ARGON2ID = iota // default
-	ARGON2I
+	// this constant is to select Argon2Id in Argon2Params version field
+	Argon2id = iota // default
+	// this constant is to select Argon2I in Argon2Params version field
+	Argon2i
 )
 
 const (
@@ -46,27 +48,38 @@ var (
 		the purpose of the package is to help with comparison and hashing + format, nothing more nothing less
 
 	*/
-	ArgonCommonParameters = Argon2Params{
-		version: ARGON2ID,
+	argonMinParameters = Argon2Params{
+		version: Argon2id,
+		time:    1,
+		memory:  16 * 1024,
+		thread:  2,
+		saltlen: 16,
+		keylen:  16,
+		masked:  false,
+	}
+
+	argonCommonParameters = Argon2Params{
+		version: Argon2id,
 		time:    1,
 		memory:  64 * 1024,
 		thread:  4,
 		saltlen: 16,
 		keylen:  32,
-		private: false,
+		masked:  false,
 	}
 
-	ArgonParanoidParameters = Argon2Params{
-		version: ARGON2ID,
+	argonParanoidParameters = Argon2Params{
+		version: Argon2id,
 		time:    2,
 		memory:  256 * 1024,
 		thread:  16,
 		saltlen: 32,
 		keylen:  64,
-		private: false,
+		masked:  false,
 	}
 )
 
+// Argon2Params are the parameters for the argon2 key derivation.
 type Argon2Params struct {
 	version int
 	time    uint32
@@ -75,7 +88,7 @@ type Argon2Params struct {
 	salt    []byte // on compare only..
 	saltlen uint32
 	keylen  uint32
-	private bool // are parameters private
+	masked  bool // are parameters private
 }
 
 // [0] password: 'prout' hashed: '$2id$aiOE.rPFUFkkehxc6utWY.$1$65536$8$32$Wv1IMP6xwaqVaQGOX6Oxe.eSEbozeRJLzln8ZlthZfS'
@@ -118,7 +131,7 @@ func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 	keylen := uint32(keylenint)
 
 	ap := Argon2Params{
-		version: ARGON2ID, // default for now..
+		version: Argon2id, // default for now..
 		time:    time,
 		memory:  memory,
 		thread:  thread,
@@ -137,20 +150,18 @@ func (p *Argon2Params) validate(min *Argon2Params) error {
 	return nil
 }
 
-func (p *Argon2Params) Compare(hashed, password []byte) error {
-	//fmt.Printf("ARGON COMPARE: \n")
+func (p *Argon2Params) compare(hashed, password []byte) error {
 	compared, err := p.generateFromParams(password)
 	if err != nil {
 		return err
 	}
 
 	//fmt.Printf("COMPARE %s vs %s\n", hashed, compared)
-
 	if subtle.ConstantTimeCompare(compared, hashed) == 1 {
 		return nil
 	}
 
-	return fmt.Errorf("mismatch")
+	return ErrMismatch
 }
 
 func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
@@ -162,9 +173,8 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 	//salt64 := base64.StdEncoding.EncodeToString(salt)
 	salt64 := base64Encode(p.salt)
 
-	fmt.Printf("private: %v\n", p.private)
 	// params
-	if !p.private {
+	if !p.masked {
 		params = fmt.Sprintf("%c%d%c%d%c%d%c%d",
 			separatorRune, p.time,
 			separatorRune, p.memory,
@@ -173,10 +183,10 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 	}
 
 	switch p.version {
-	case ARGON2I:
+	case Argon2i:
 		id = idArgon2i
 		key = argon2.Key(password, p.salt, p.time, p.memory, p.thread, p.keylen)
-	case ARGON2ID:
+	case Argon2id:
 		fallthrough
 	default:
 		id = idArgon2id
@@ -199,7 +209,7 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 	// $ID$b64(SALT)$TIME$MEM$THREAD$KEYLEN$b64(ENCRYPTED)
 	// ID:
 	// $2D == ARGON2D
-	// $2ID == ARGON2ID
+	// $2ID == Argon2id
 	return hash.Bytes(), nil
 }
 

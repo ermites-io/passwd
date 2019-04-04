@@ -1,9 +1,10 @@
 // +build go1.11
 
+// Package passwd provides simple primitives for hashing and verifying
+// password.
 package passwd
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -48,6 +49,8 @@ import (
 // func (ph *PasswordHash) String()
 
 // hard part will be to define those.
+
+// Password hashing profiles available
 const (
 	Argon2idDefault = iota
 	Argon2idParanoid
@@ -58,27 +61,33 @@ const (
 )
 
 var (
-	MyError = errors.New("file error")
+	ErrUnsupported = fmt.Errorf("unsupported")
+	ErrMismatch    = fmt.Errorf("mismatch")
 
 	// XXX not sure yet it's the right approach
 	// limiting the choice for password storage avoid shooting yourself in
 	// the foot.
-	Params = map[int]interface{}{
-		Argon2idDefault:  ArgonCommonParameters,
-		Argon2idParanoid: ArgonParanoidParameters,
-		ScryptDefault:    ScryptCommonParameters,
-		ScryptParanoid:   ScryptParanoidParameters,
-		BcryptDefault:    BcryptCommonParameters,
-		BcryptParanoid:   BcryptParanoidParameters,
+	params = map[int]interface{}{
+		Argon2idDefault:  argonCommonParameters,
+		Argon2idParanoid: argonParanoidParameters,
+		ScryptDefault:    scryptCommonParameters,
+		ScryptParanoid:   scryptParanoidParameters,
+		BcryptDefault:    bcryptCommonParameters,
+		BcryptParanoid:   bcryptParanoidParameters,
 	}
 )
 
-// password.Profile
+// Profile define the hashing profile you have select and is created using
+// New() / NewMasked() / NewCustom()
 type Profile struct {
 	t      int         // type
 	params interface{} // parameters
 }
 
+// Hash is the Profile method for computing the hash value
+// respective of the selected profile.
+// it takes the plaintext password to hash and output its hashed value
+// ready for storage
 func (p *Profile) Hash(password []byte) ([]byte, error) {
 	switch v := p.params.(type) {
 	case BcryptParams:
@@ -89,14 +98,19 @@ func (p *Profile) Hash(password []byte) ([]byte, error) {
 		return v.generateFromPassword(password)
 	default:
 		fmt.Printf("unsupported\n")
-		panic("unsupported")
+		//panic("unsupported")
 	}
 
-	return nil, MyError
+	return nil, ErrUnsupported
 }
 
 // as it's a Profile method, we expect the hashed version to be already loaded
 // with NewHash(hash)
+
+// Compare method compared a computed hash against a plaintext password
+// for the associated profile.
+// This function is mainly here to allow to work with "masked" hashes
+// where we don't provide the Hash parameters in the hashed values.
 func (p *Profile) Compare(hashed, password []byte) error {
 	salt, err := parseFromHashToSalt(hashed)
 	if err != nil {
@@ -106,39 +120,43 @@ func (p *Profile) Compare(hashed, password []byte) error {
 
 	switch v := p.params.(type) {
 	case BcryptParams:
-		return v.Compare(hashed, password)
+		return v.compare(hashed, password)
 	case ScryptParams:
 		v.salt = salt
-		return v.Compare(hashed, password)
+		return v.compare(hashed, password)
 	case Argon2Params:
 		v.salt = salt
 		//fmt.Printf("ARGON2 PARAM FOUND\n")
-		return v.Compare(hashed, password)
+		return v.compare(hashed, password)
 	}
 
 	return fmt.Errorf("mismatch")
 }
 
+// New instanciate a new Profile
 func New(profile int) *Profile {
 	p := Profile{
 		t:      profile,
-		params: Params[profile],
+		params: params[profile],
 	}
 	return &p
 }
 
-func NewPrivate(profile int) *Profile {
-	params := Params[profile]
+// New instanciates a new masked Profile.
+// Masked translate to the fact that no hash parameters will be provided.
+func NewMasked(profile int) *Profile {
+	params := params[profile]
 
 	switch v := params.(type) {
 	case BcryptParams:
-		v.private = true
+		//v.masked = true
+		fmt.Printf("cannot mask parameters on bcrypt\n")
 		params = v
 	case ScryptParams:
-		v.private = true
+		v.masked = true
 		params = v
 	case Argon2Params:
-		v.private = true
+		v.masked = true
 		params = v
 	}
 
@@ -149,6 +167,7 @@ func NewPrivate(profile int) *Profile {
 	return &p
 }
 
+// NewCustom instanciates a new Profile using user defined hash parameters
 func NewCustom(params interface{}) *Profile {
 	switch v := params.(type) {
 	case BcryptParams:
@@ -172,6 +191,7 @@ func NewCustom(params interface{}) *Profile {
 	}
 }
 
+// Compare verify a non masked hash values against a plaintext password.
 func Compare(hashed, password []byte) error {
 	//var version, stuff string
 	//var num int
@@ -192,12 +212,12 @@ func Compare(hashed, password []byte) error {
 	//fmt.Printf("PARAM TYPE: %T\n", params)
 	switch v := params.(type) {
 	case BcryptParams:
-		return v.Compare(hashed, password)
+		return v.compare(hashed, password)
 	case ScryptParams:
-		return v.Compare(hashed, password)
+		return v.compare(hashed, password)
 	case Argon2Params:
 		//fmt.Printf("ARGON2 PARAM FOUND\n")
-		return v.Compare(hashed, password)
+		return v.compare(hashed, password)
 	}
 
 	return fmt.Errorf("mismatch")

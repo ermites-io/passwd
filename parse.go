@@ -18,6 +18,8 @@ const (
 
 var (
 	rangeTableSeparator = rangetable.New(separatorRune)
+
+	ErrParse = fmt.Errorf("parse error")
 )
 
 func token(c rune) bool {
@@ -55,7 +57,7 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 		//return ap.Compare(hashed, password)
 		return *ap, nil
 	}
-	return nil, fmt.Errorf("invalid")
+	return nil, ErrParse
 }
 
 func parseFromHashToSalt(hashed []byte) ([]byte, error) {
@@ -63,7 +65,6 @@ func parseFromHashToSalt(hashed []byte) ([]byte, error) {
 	if len(fields) == 0 {
 		return nil, fmt.Errorf("invalid format")
 	}
-	fmt.Printf("prout fields: %q\n", fields)
 	switch fields[0] {
 	case idBcrypt:
 		return nil, nil
@@ -78,6 +79,6 @@ func parseFromHashToSalt(hashed []byte) ([]byte, error) {
 		}
 		return salt, nil
 	}
-	return nil, fmt.Errorf("invalid format")
+	return nil, ErrParse
 
 }

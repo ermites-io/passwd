@@ -39,7 +39,7 @@ func main() {
 	// profile
 	// PUBLIC PARAMETERS
 	p := passwd.New(profile)
-	fmt.Printf("argv[%d]: %q\n", len(argv), argv)
+	//fmt.Printf("argv[%d]: %q\n", len(argv), argv)
 	if len(argv) > 0 {
 		for idx, passwordStr := range argv {
 			h, err := p.Hash([]byte(passwordStr))
@@ -55,8 +55,8 @@ func main() {
 		}
 	}
 
-	// PRIVATE PARAMETERS
-	p = passwd.NewPrivate(profile)
+	// MASKED PARAMETERS
+	p = passwd.NewMasked(profile)
 	fmt.Printf("argv[%d]: %q\n", len(argv), argv)
 	if len(argv) > 0 {
 		for idx, passwordStr := range argv {

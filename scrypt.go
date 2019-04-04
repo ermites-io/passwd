@@ -48,25 +48,26 @@ var (
 		Remember to get a good random salt.
 
 	*/
-	ScryptCommonParameters = ScryptParams{
+	scryptCommonParameters = ScryptParams{
 		n:       65536,
 		r:       8,
 		p:       1,
 		saltlen: 16,
 		keylen:  32,
-		private: false,
+		masked:  false,
 	}
 
-	ScryptParanoidParameters = ScryptParams{
+	scryptParanoidParameters = ScryptParams{
 		n:       65536,
 		r:       32,
 		p:       2,
 		saltlen: 32,
 		keylen:  64,
-		private: false,
+		masked:  false,
 	}
 )
 
+// ScryptParams are the parameters for the scrypt key derivation.
 type ScryptParams struct {
 	n       uint32 // cpu memory cost must be > 1 && %2 == 0
 	r       uint32 // parallelization cost param -> r*p < 2^30 (go implementation specific)
@@ -74,7 +75,7 @@ type ScryptParams struct {
 	salt    []byte // my salt..
 	saltlen uint32 // 128 bits min.
 	keylen  uint32 // 128 bits min.
-	private bool   // are parameters private
+	masked  bool   // are parameters private
 }
 
 func newScryptParamsFromFields(fields []string) (*ScryptParams, error) {
@@ -145,7 +146,7 @@ func (p *ScryptParams) generateFromParams(password []byte) ([]byte, error) {
 	salt64 := base64Encode(p.salt)
 
 	// params
-	if !p.private {
+	if !p.masked {
 		params = fmt.Sprintf("%c%d%c%d%c%d%c%d",
 			separatorRune, p.n,
 			separatorRune, p.r,
@@ -184,18 +185,15 @@ func (p *ScryptParams) generateFromPassword(password []byte) ([]byte, error) {
 	return p.generateFromParams(password)
 }
 
-func (p *ScryptParams) Compare(hashed, password []byte) error {
-	//fmt.Printf("SCRYPT COMPARE: \n")
+func (p *ScryptParams) compare(hashed, password []byte) error {
 	compared, err := p.generateFromParams(password)
 	if err != nil {
 		return err
 	}
 
-	//fmt.Printf("COMPARE %s vs %s\n", hashed, compared)
-
 	if subtle.ConstantTimeCompare(compared, hashed) == 1 {
 		return nil
 	}
 
-	return fmt.Errorf("mismatch")
+	return ErrMismatch
 }
