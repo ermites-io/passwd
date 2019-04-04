@@ -37,8 +37,8 @@ But you might decide you don't interoperate with other systems and you control y
 as such you might be willing to make things slightly more annoying for an attacker reaching your stored password 
 by "masking" your parameters (instead of embedding them in the resulting hash)
 
-Public parameters allows you to use the hashed password to directly provide a simple passwd.Compare() function.
-Masked parameters requires you to say what parameters you use AND to call the (p \*Profile).Compare() method 
+Public parameters allows you to use the hashed password to directly provide a simple ```passwd.Compare()``` function.
+Masked parameters requires you to say what parameters you use AND to call the ```(p *Profile).Compare()``` method 
 of the profile.
 
 Attacker would have to not only grab the stored password, but also to guess the parameters you use
@@ -102,7 +102,15 @@ done.
 
 # Status
 
+This package exclusively uses crypto algorithm implementations shipped the go standard library (located in ```x/crypto/```)
+
 This is work in progress and the default are still being worked out, researched and tuned.
 Feedback is always welcome.
 
-An example tool/usage lies in cmd/pcrypt in this repository, hopefully it helps understanding how to use this package.
+An example tool/usage lies in ```cmd/pcrypt``` in this repository, hopefully it helps understanding how to use this package.
+
+## Featuring (because there is always a star in your production..)
+
+* [Argon2](https://en.wikipedia.org/wiki/Argon2) for today key stretching.
+* [Scrypt](http://en.wikipedia.org/wiki/Scrypt) for key stretching.
+* [Go](http://golang.org) because it works.
