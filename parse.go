@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	separatorChar = '$'
+	//separatorChar = '$'
 	separatorRune = rune('$')
-	separatorStr  = "$"
+	//separatorStr  = "$"
 )
 
 var (

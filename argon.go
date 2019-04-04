@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	// this constant is to select Argon2Id in Argon2Params version field
+	// Argon2id constant is to select the argon flavor in Argon2Params version field
 	Argon2id = iota // default
-	// this constant is to select Argon2I in Argon2Params version field
+	// Argon2i constant is to select argon flavor in Argon2Params version field
 	Argon2i
 )
 
@@ -147,13 +147,19 @@ func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 // will upgrade over the years
 // XXX TODO
 func (p *Argon2Params) validate(min *Argon2Params) error {
+	// XXX TODO
 	return nil
 }
 
 func (p *Argon2Params) compare(hashed, password []byte) error {
+	err := p.validate(&argonMinParameters)
+	if err != nil {
+		return ErrMismatch
+	}
+
 	compared, err := p.generateFromParams(password)
 	if err != nil {
-		return err
+		return ErrMismatch
 	}
 
 	//fmt.Printf("COMPARE %s vs %s\n", hashed, compared)

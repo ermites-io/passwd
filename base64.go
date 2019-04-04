@@ -7,6 +7,7 @@
 // taken from the x/crypto/bcrypt package internals
 
 //package bcrypt
+
 package passwd
 
 import "encoding/base64"
