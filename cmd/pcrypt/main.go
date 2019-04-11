@@ -26,7 +26,7 @@ func main() {
 
 	switch {
 	case *argonFlag:
-		profile = passwd.Argon2idParanoid
+		profile = passwd.Argon2idDefault
 	case *scryptFlag:
 		profile = passwd.ScryptDefault
 	case *bcryptFlag:
