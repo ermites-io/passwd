@@ -13,4 +13,5 @@ const (
 	ErrParse       = Error("parse error")
 	ErrUnsupported = Error("unsupported")
 	ErrMismatch    = Error("mismatch")
+	ErrUnsafe      = Error("unsafe parameters")
 )

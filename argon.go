@@ -49,46 +49,50 @@ var (
 
 	*/
 	argonMinParameters = Argon2Params{
-		version: Argon2id,
-		time:    1,
-		memory:  16 * 1024,
-		thread:  8,
-		saltlen: 16,
-		keylen:  16,
-		masked:  false,
+		Version: Argon2id,
+		Time:    1,
+		Memory:  16 * 1024,
+		Thread:  8,
+		Saltlen: 16,
+		Keylen:  16,
+		//salt
+		masked: false,
 	}
 
 	argonCommonParameters = Argon2Params{
-		version: Argon2id,
-		time:    1,
-		memory:  64 * 1024,
-		thread:  16,
-		saltlen: 16,
-		keylen:  32,
-		masked:  false,
+		Version: Argon2id,
+		Time:    1,
+		Memory:  64 * 1024,
+		Thread:  16,
+		Saltlen: 16,
+		Keylen:  32,
+		//salt
+		masked: false,
 	}
 
 	argonParanoidParameters = Argon2Params{
-		version: Argon2id,
-		time:    2,
-		memory:  256 * 1024,
-		thread:  32,
-		saltlen: 32,
-		keylen:  64,
-		masked:  false,
+		Version: Argon2id,
+		Time:    2,
+		Memory:  256 * 1024,
+		Thread:  32,
+		Saltlen: 32,
+		Keylen:  64,
+		//salt
+		masked: false,
 	}
 )
 
 // Argon2Params are the parameters for the argon2 key derivation.
 type Argon2Params struct {
-	version int
-	time    uint32
-	memory  uint32
-	thread  uint8
-	salt    []byte // on compare only..
-	saltlen uint32
-	keylen  uint32
-	masked  bool // are parameters private
+	Version int
+	Time    uint32
+	Memory  uint32
+	Thread  uint8
+	Saltlen uint32
+	Keylen  uint32
+	// unexported
+	salt   []byte // on compare only..
+	masked bool   // are parameters private
 }
 
 // [0] password: 'prout' hashed: '$2id$aiOE.rPFUFkkehxc6utWY.$1$65536$8$32$Wv1IMP6xwaqVaQGOX6Oxe.eSEbozeRJLzln8ZlthZfS'
@@ -130,14 +134,15 @@ func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 	}
 	keylen := uint32(keylenint)
 
+	// we just what we need.
 	ap := Argon2Params{
-		version: Argon2id, // default for now..
-		time:    time,
-		memory:  memory,
-		thread:  thread,
+		Version: Argon2id, // default for now..
+		Time:    time,
+		Memory:  memory,
+		Thread:  thread,
+		Saltlen: saltlen,
+		Keylen:  keylen,
 		salt:    salt,
-		saltlen: saltlen,
-		keylen:  keylen,
 	}
 
 	return &ap, nil
@@ -152,18 +157,20 @@ func (p *Argon2Params) validate(min *Argon2Params) error {
 }
 
 func (p *Argon2Params) compare(hashed, password []byte) error {
-	err := p.validate(&argonMinParameters)
-	if err != nil {
-		return ErrMismatch
-	}
-
 	compared, err := p.generateFromParams(password)
 	if err != nil {
 		return ErrMismatch
 	}
 
+	// yes in case things are padded by mistake depending on storage
+	// whatever.. the params tells us what to verify.
+	hashlen := uint32(len(compared))
+	if uint32(len(hashed)) < hashlen {
+		return ErrMismatch
+	}
+
 	//fmt.Printf("COMPARE %s vs %s\n", hashed, compared)
-	if subtle.ConstantTimeCompare(compared, hashed) == 1 {
+	if subtle.ConstantTimeCompare(compared, hashed[:hashlen]) == 1 {
 		return nil
 	}
 
@@ -175,6 +182,11 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 	var id, params string
 	var hash bytes.Buffer
 
+	err := p.validate(&argonMinParameters)
+	if err != nil {
+		return nil, ErrUnsafe
+	}
+
 	// need to b64.
 	//salt64 := base64.StdEncoding.EncodeToString(salt)
 	salt64 := base64Encode(p.salt)
@@ -182,21 +194,21 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 	// params
 	if !p.masked {
 		params = fmt.Sprintf("%c%d%c%d%c%d%c%d",
-			separatorRune, p.time,
-			separatorRune, p.memory,
-			separatorRune, p.thread,
-			separatorRune, p.keylen)
+			separatorRune, p.Time,
+			separatorRune, p.Memory,
+			separatorRune, p.Thread,
+			separatorRune, p.Keylen)
 	}
 
-	switch p.version {
+	switch p.Version {
 	case Argon2i:
 		id = idArgon2i
-		key = argon2.Key(password, p.salt, p.time, p.memory, p.thread, p.keylen)
+		key = argon2.Key(password, p.salt, p.Time, p.Memory, p.Thread, p.Keylen)
 	case Argon2id:
 		fallthrough
 	default:
 		id = idArgon2id
-		key = argon2.IDKey(password, p.salt, p.time, p.memory, p.thread, p.keylen)
+		key = argon2.IDKey(password, p.salt, p.Time, p.Memory, p.Thread, p.Keylen)
 	}
 
 	// encode the key
@@ -207,7 +219,7 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 		separatorRune, salt64,
 		params,
 		separatorRune, key64)
-	_, err := hash.WriteString(passwordStr)
+	_, err = hash.WriteString(passwordStr)
 	if err != nil {
 		return nil, err
 	}
@@ -220,9 +232,9 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 }
 
 func (p *Argon2Params) getSalt() error {
-	p.salt = make([]byte, p.saltlen)
+	p.salt = make([]byte, p.Saltlen)
 	n, err := rand.Read(p.salt)
-	if err != nil || n != int(p.saltlen) {
+	if err != nil || n != int(p.Saltlen) {
 		return err
 	}
 	return nil

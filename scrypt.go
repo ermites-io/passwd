@@ -49,33 +49,36 @@ var (
 
 	*/
 	scryptCommonParameters = ScryptParams{
-		n:       65536,
-		r:       8,
-		p:       1,
-		saltlen: 16,
-		keylen:  32,
-		masked:  false,
+		N:       65536,
+		R:       8,
+		P:       1,
+		Saltlen: 16,
+		Keylen:  32,
+		// salt
+		masked: false,
 	}
 
 	scryptParanoidParameters = ScryptParams{
-		n:       65536,
-		r:       32,
-		p:       2,
-		saltlen: 32,
-		keylen:  64,
-		masked:  false,
+		N:       65536,
+		R:       32,
+		P:       2,
+		Saltlen: 32,
+		Keylen:  64,
+		// salt
+		masked: false,
 	}
 )
 
 // ScryptParams are the parameters for the scrypt key derivation.
 type ScryptParams struct {
-	n       uint32 // cpu memory cost must be > 1 && %2 == 0
-	r       uint32 // parallelization cost param -> r*p < 2^30 (go implementation specific)
-	p       uint32 // parallelization cost param -> r*p < 2^30 (go implementation specific)
-	salt    []byte // my salt..
-	saltlen uint32 // 128 bits min.
-	keylen  uint32 // 128 bits min.
-	masked  bool   // are parameters private
+	N       uint32 // cpu memory cost must be > 1 && %2 == 0
+	R       uint32 // parallelization cost param -> r*p < 2^30 (go implementation specific)
+	P       uint32 // parallelization cost param -> r*p < 2^30 (go implementation specific)
+	Saltlen uint32 // 128 bits min.
+	Keylen  uint32 // 128 bits min.
+	// unexported
+	salt   []byte // my salt..
+	masked bool   // are parameters private
 }
 
 func newScryptParamsFromFields(fields []string) (*ScryptParams, error) {
@@ -116,21 +119,21 @@ func newScryptParamsFromFields(fields []string) (*ScryptParams, error) {
 	keylen := uint32(keylenint)
 
 	sp := ScryptParams{
-		n:       n,
-		r:       r,
-		p:       p,
+		N:       n,
+		R:       r,
+		P:       p,
+		Saltlen: saltlen,
+		Keylen:  keylen,
 		salt:    salt,
-		saltlen: saltlen,
-		keylen:  keylen,
 	}
 
 	return &sp, nil
 }
 
 func (p *ScryptParams) getSalt() error {
-	p.salt = make([]byte, p.saltlen)
+	p.salt = make([]byte, p.Saltlen)
 	n, err := rand.Read(p.salt)
-	if err != nil || n != int(p.saltlen) {
+	if err != nil || n != int(p.Saltlen) {
 		return err
 	}
 	return nil
@@ -148,14 +151,14 @@ func (p *ScryptParams) generateFromParams(password []byte) ([]byte, error) {
 	// params
 	if !p.masked {
 		params = fmt.Sprintf("%c%d%c%d%c%d%c%d",
-			separatorRune, p.n,
-			separatorRune, p.r,
-			separatorRune, p.p,
-			separatorRune, p.keylen)
+			separatorRune, p.N,
+			separatorRune, p.R,
+			separatorRune, p.P,
+			separatorRune, p.Keylen)
 	}
 	id := idScrypt
 
-	key, err := scrypt.Key(password, p.salt, int(p.r), int(p.n), int(p.p), int(p.keylen))
+	key, err := scrypt.Key(password, p.salt, int(p.N), int(p.R), int(p.P), int(p.Keylen))
 	if err != nil {
 		return nil, err
 	}
@@ -191,7 +194,13 @@ func (p *ScryptParams) compare(hashed, password []byte) error {
 		return err
 	}
 
-	if subtle.ConstantTimeCompare(compared, hashed) == 1 {
+	// sanity checks.
+	hashlen := uint32(len(compared))
+	if uint32(len(hashed)) < hashlen {
+		return ErrMismatch
+	}
+
+	if subtle.ConstantTimeCompare(compared, hashed[:hashlen]) == 1 {
 		return nil
 	}
 

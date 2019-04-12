@@ -5,8 +5,8 @@ package passwd
 import "golang.org/x/crypto/bcrypt"
 
 var (
-	bcryptCommonParameters   = BcryptParams{cost: bcrypt.DefaultCost}
-	bcryptParanoidParameters = BcryptParams{cost: bcrypt.MaxCost}
+	bcryptCommonParameters   = BcryptParams{Cost: bcrypt.DefaultCost}
+	bcryptParanoidParameters = BcryptParams{Cost: bcrypt.MaxCost}
 )
 
 const (
@@ -15,11 +15,11 @@ const (
 
 // BcryptParams are the parameters for the bcrypt key derivation.
 type BcryptParams struct {
-	cost int
+	Cost int
 }
 
 func (bp *BcryptParams) generateFromPassword(password []byte) ([]byte, error) {
-	return bcrypt.GenerateFromPassword(password, bp.cost)
+	return bcrypt.GenerateFromPassword(password, bp.Cost)
 }
 
 func (bp *BcryptParams) compare(hashed, password []byte) error {

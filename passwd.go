@@ -139,6 +139,30 @@ func New(profile int) *Profile {
 	return &p
 }
 
+// NewCustom instanciates a new Profile using user defined hash parameters
+func NewCustom(params interface{}) *Profile {
+	switch v := params.(type) {
+	case BcryptParams:
+		return &Profile{
+			t:      -1,
+			params: v,
+		}
+	case ScryptParams:
+		return &Profile{
+			t:      -1,
+			params: v,
+		}
+	case Argon2Params:
+		return &Profile{
+			t:      -1,
+			params: v,
+		}
+	default:
+		fmt.Printf("Unsupported\n")
+		panic("unsupported")
+	}
+}
+
 // New instanciates a new masked Profile.
 // Masked translate to the fact that no hash parameters will be provided.
 func NewMasked(profile int) *Profile {
@@ -162,30 +186,6 @@ func NewMasked(profile int) *Profile {
 		params: params,
 	}
 	return &p
-}
-
-// NewCustom instanciates a new Profile using user defined hash parameters
-func NewCustom(params interface{}) *Profile {
-	switch v := params.(type) {
-	case BcryptParams:
-		return &Profile{
-			t:      -1,
-			params: v,
-		}
-	case ScryptParams:
-		return &Profile{
-			t:      -1,
-			params: v,
-		}
-	case Argon2Params:
-		return &Profile{
-			t:      -1,
-			params: v,
-		}
-	default:
-		fmt.Printf("Unsupported\n")
-		panic("unsupported")
-	}
 }
 
 // Compare verify a non masked hash values against a plaintext password.
