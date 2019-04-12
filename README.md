@@ -107,6 +107,11 @@ bcrypt() is just a wrapper to x/crypto/bcrypt, only scrypt and argon support Mas
 bcrypt() is implemented for migration ease purposes, Compare will works perfectly with bcrypt 
 while encrypting new password and changing old ones can use the new "profile".
 
+# Changelog
+
+* v0.1.0: initial release
+* v0.1.1: fix /issues/1
+
 # Status
 
 This package exclusively uses crypto algorithm implementations shipped in go extended crypto packages (located in ```x/crypto/```)
