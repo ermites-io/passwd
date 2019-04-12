@@ -101,6 +101,12 @@ check a hash against a password:
 
 done.
 
+# Important Notes
+
+bcrypt() is just a wrapper to x/crypto/bcrypt, only scrypt and argon support MaskedParameters.
+bcrypt() is implemented for migration ease purposes, Compare will works perfectly with bcrypt 
+while encrypting new password and changing old ones can use the new "profile".
+
 # Status
 
 This package exclusively uses crypto algorithm implementations shipped in go extended crypto packages (located in ```x/crypto/```)
