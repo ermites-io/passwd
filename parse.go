@@ -26,7 +26,7 @@ func token(c rune) bool {
 func parseFromHashToParams(hashed []byte) (interface{}, error) {
 
 	fields := strings.FieldsFunc(string(hashed), token)
-	if len(fields) == 0 {
+	if len(fields) < 2 {
 		return nil, ErrParse
 	}
 
@@ -41,7 +41,7 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 		sp, err := newScryptParamsFromFields(fields[1:]) // mismatch.
 		if err != nil {
 			// XXX wrapp the error
-			return nil, err
+			return nil, ErrParse
 		}
 		return *sp, nil
 	case idArgon2i:
@@ -51,7 +51,7 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 		ap, err := newArgon2ParamsFromFields(fields[1:]) // mismatch.
 		if err != nil {
 			// XXX wrapp the error
-			return nil, err
+			return nil, ErrParse
 		}
 		//return ap.Compare(hashed, password)
 		return *ap, nil
@@ -61,7 +61,7 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 
 func parseFromHashToSalt(hashed []byte) ([]byte, error) {
 	fields := strings.FieldsFunc(string(hashed), token)
-	if len(fields) == 0 {
+	if len(fields) < 2 {
 		return nil, ErrParse
 	}
 	switch fields[0] {
@@ -74,7 +74,7 @@ func parseFromHashToSalt(hashed []byte) ([]byte, error) {
 	case idArgon2id:
 		salt, err := base64Decode([]byte(fields[1])) // process the salt
 		if err != nil {
-			return nil, err
+			return nil, ErrParse
 		}
 		return salt, nil
 	}
