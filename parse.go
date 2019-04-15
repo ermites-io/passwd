@@ -26,7 +26,9 @@ func token(c rune) bool {
 func parseFromHashToParams(hashed []byte) (interface{}, error) {
 
 	fields := strings.FieldsFunc(string(hashed), token)
-	//fmt.Printf("FIELDS: %q\n", fields)
+	if len(fields) == 0 {
+		return nil, ErrParse
+	}
 
 	switch fields[0] {
 	case idBcrypt:
