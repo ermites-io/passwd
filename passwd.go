@@ -9,8 +9,10 @@ import (
 )
 
 //
-// Goal is to provide a password wrapper, that provides you with the proper
-// hash, propose a storage format output and check capabilities.
+// Goal is to provide a KISS password hashing package, that provides you with a
+// way to hash and verify a password.
+// The package propose a storage format output similar to other password storage
+// if necessary more strong password hashing algorithm will be added.
 //
 // support :
 //
@@ -18,37 +20,25 @@ import (
 // scrypt
 // argon2id
 //
+// a mix of (draft) RFC interpretation + documentation + cryptographer docs +
+// + cryptographers (PHDs, not bloggers) friends suggestions of interpretation
+// experts advices interpretation + current cryptography libs
+// (libsodium, openssl and other frameworks...)
+// definition/comments/etc... bits and pieces that i need to more clearly
+// document to define a good baseline for those new hashing algorithms.
+//
 // BcryptMin
 // BCRYPT_LEGACY
 // BCRYPT_HARDEN
 //
-// ARGON2ID_2018_MIN (details..)
-// ARGON2ID_2018_COMMON (RFC, IETF / details..)
-// ARGON2ID_2018_HARDENED
+// ARGON2ID_MIN (unsafe usage..) TODO
+// ARGON2ID_COMMON (RFC, IETF / details..)
+// ARGON2ID_PARANOID
 //
-// SCRYPT_2018_MIN
-// SCRYPT_2018_COMMON (details..)
-// SCRYPT_2018_HARDENED
+// SCRYPT_MIN (unsafe usage) TODO
+// SCRYPT_COMMON (details..)
+// SCRYPT_PARANOID
 //
-// roughly:
-// passwd.New( strengthprofile )
-// passwd.NewCustom( interface : argon_struct, scrypt_struct, bcrypt_struct )
-//
-// NewHash( hashedpassword )
-//
-//
-// Password {
-//   type: password
-//   parameters: *params
-// }
-//
-// func (p *Password) Derive(string) PasswordHash
-// func (p *Password) CompareHashAndPassword(string
-//
-//
-// func (ph *PasswordHash) String()
-
-// hard part will be to define those.
 
 // Password hashing profiles available
 const (
