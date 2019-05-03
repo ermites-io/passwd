@@ -59,6 +59,7 @@ var (
 		masked: false,
 	}
 
+	// XXX need more test/analysis
 	argonCommonParameters = Argon2Params{
 		Version: Argon2id,
 		Time:    1,
@@ -70,10 +71,11 @@ var (
 		masked: false,
 	}
 
+	// XXX need more test/analysis
 	argonParanoidParameters = Argon2Params{
 		Version: Argon2id,
 		Time:    2,
-		Memory:  256 * 1024,
+		Memory:  512 * 1024,
 		Thread:  32,
 		Saltlen: 32,
 		Keylen:  64,

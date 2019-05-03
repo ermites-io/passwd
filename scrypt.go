@@ -47,9 +47,12 @@ var (
 		consider setting N to the highest power of 2 you can derive within 100 milliseconds.
 		Remember to get a good random salt.
 
+		another source and interpretation of those numbers by crypto gopher:
+		https://blog.filippo.io/the-scrypt-parameters
+
 	*/
 	scryptCommonParameters = ScryptParams{
-		N:       65536,
+		N:       1 << 16,
 		R:       8,
 		P:       1,
 		Saltlen: 16,
@@ -59,7 +62,7 @@ var (
 	}
 
 	scryptParanoidParameters = ScryptParams{
-		N:       65536,
+		N:       1 << 17,
 		R:       32,
 		P:       2,
 		Saltlen: 32,
