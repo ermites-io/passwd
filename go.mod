@@ -1,4 +1,4 @@
-module github.com/unix4fun/passwd
+module git.sr.ht/~eau/passwd
 
 go 1.12
 
