@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/unix4fun/passwd"
+	"git.sr.ht/~eau/passwd"
 )
 
 // a simple example of passwd package usage.
