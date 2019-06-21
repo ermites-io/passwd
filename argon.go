@@ -89,12 +89,12 @@ type Argon2Params struct {
 	Version int
 	Time    uint32
 	Memory  uint32
-	Thread  uint8
 	Saltlen uint32
 	Keylen  uint32
+	Thread  uint8
+	Masked  bool // are parameters private
 	// unexported
-	salt   []byte // on compare only..
-	Masked bool   // are parameters private
+	salt []byte // on compare only..
 }
 
 // [0] password: 'prout' hashed: '$2id$aiOE.rPFUFkkehxc6utWY.$1$65536$8$32$Wv1IMP6xwaqVaQGOX6Oxe.eSEbozeRJLzln8ZlthZfS'
@@ -107,14 +107,16 @@ func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 	// salt
 	salt, err := base64Decode([]byte(fields[0])) // process the salt
 	if err != nil {
-		return nil, err
+		fmt.Printf("b64 decode error: %v\n", err)
+		return nil, ErrParse
 	}
 	saltlen := uint32(len(salt))
 
 	// ARGON FIELD: ["mezIC/cmChATxAfFFe9ele" "2" "65536" "8" "32" "omYy81uRZcZv6JkbH17wA0s1CSpH4UQttXBB42oKMXK"]
 	timeint, err := strconv.ParseInt(fields[1], 10, 32)
 	if err != nil {
-		return nil, err
+		fmt.Printf("invalid time decode error: %v\n", err)
+		return nil, ErrParse
 	}
 	time := uint32(timeint)
 

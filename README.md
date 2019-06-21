@@ -109,8 +109,9 @@ while encrypting new password and changing old ones can use the new "profile".
 
 # Changelog
 
-* v0.1.0: initial release
+* v0.1.2: fix hash parsing.
 * v0.1.1: fix /issues/1
+* v0.1.0: initial release
 
 # Status
 

@@ -41,7 +41,7 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 		sp, err := newScryptParamsFromFields(fields[1:]) // mismatch.
 		if err != nil {
 			// XXX wrapp the error
-			return nil, ErrParse
+			return nil, err
 		}
 		return *sp, nil
 	case idArgon2i:
@@ -51,9 +51,8 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 		ap, err := newArgon2ParamsFromFields(fields[1:]) // mismatch.
 		if err != nil {
 			// XXX wrapp the error
-			return nil, ErrParse
+			return nil, err
 		}
-		//return ap.Compare(hashed, password)
 		return *ap, nil
 	}
 	return nil, ErrParse
@@ -74,7 +73,7 @@ func parseFromHashToSalt(hashed []byte) ([]byte, error) {
 	case idArgon2id:
 		salt, err := base64Decode([]byte(fields[1])) // process the salt
 		if err != nil {
-			return nil, ErrParse
+			return nil, err
 		}
 		return salt, nil
 	}

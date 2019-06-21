@@ -44,7 +44,11 @@ func main() {
 		switch {
 		case len(*checkFlag) > 0:
 			for idx, passwordStr := range argv {
-				fmt.Printf("[%d] is '%s' the passwd? %v\n", idx, passwordStr, passwd.Compare([]byte(*checkFlag), []byte(passwordStr)))
+				fmt.Printf("[%d] is '%s' the passwd? %v\n",
+					idx,
+					passwordStr,
+					passwd.Compare([]byte(*checkFlag), []byte(passwordStr)),
+				)
 			}
 		default:
 			for idx, passwordStr := range argv {

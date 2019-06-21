@@ -52,9 +52,9 @@ const (
 	ScryptParanoid
 	BcryptDefault
 	BcryptParanoid
-	Argon2Custom
-	ScryptCustom
-	BcryptCustom
+	Argon2Custom // value for custom
+	ScryptCustom // value for custom
+	BcryptCustom // value for custom
 )
 
 var (
@@ -78,7 +78,7 @@ type Profile struct {
 	params interface{} // parameters
 }
 
-// New instanciate a new Profile
+// New instantiate a new Profile
 func New(profile HashProfile) (*Profile, error) {
 	var p Profile
 
@@ -88,6 +88,43 @@ func New(profile HashProfile) (*Profile, error) {
 		p = Profile{
 			t:      profile,
 			params: params[profile],
+		}
+		return &p, nil
+	}
+
+	return nil, ErrUnsupported
+}
+
+// NewMasked instanciates a new masked Profile.
+// "masked" translate to the fact that no hash parameters will be provided in
+// the resulting hash.
+func NewMasked(profile HashProfile) (*Profile, error) {
+	switch profile {
+	case Argon2idDefault, Argon2idParanoid, ScryptDefault, ScryptParanoid, BcryptDefault, BcryptParanoid:
+		var p Profile
+
+		// all authorized
+		mparams := params[profile]
+
+		switch v := mparams.(type) {
+		case BcryptParams:
+			v.Masked = true
+			p = Profile{
+				t:      profile,
+				params: v,
+			}
+		case ScryptParams:
+			v.Masked = true
+			p = Profile{
+				t:      profile,
+				params: v,
+			}
+		case Argon2Params:
+			v.Masked = true
+			p = Profile{
+				t:      profile,
+				params: v,
+			}
 		}
 		return &p, nil
 	}
@@ -123,44 +160,6 @@ func NewCustom(params interface{}) (*Profile, error) {
 	return nil, ErrUnsupported
 }
 
-// NewMasked instanciates a new masked Profile.
-// "masked" translate to the fact that no hash parameters will be provided in
-// the resulting hash.
-func NewMasked(profile HashProfile) (*Profile, error) {
-
-	switch profile {
-	case Argon2idDefault, Argon2idParanoid, ScryptDefault, ScryptParanoid, BcryptDefault, BcryptParanoid:
-		var p Profile
-
-		// all authorized
-		mparams := params[profile]
-
-		switch v := mparams.(type) {
-		case BcryptParams:
-			v.Masked = true
-			p = Profile{
-				t:      profile,
-				params: v,
-			}
-		case ScryptParams:
-			v.Masked = true
-			p = Profile{
-				t:      profile,
-				params: v,
-			}
-		case Argon2Params:
-			v.Masked = true
-			p = Profile{
-				t:      profile,
-				params: v,
-			}
-		}
-		return &p, nil
-	}
-
-	return nil, ErrUnsupported
-}
-
 // Hash is the Profile method for computing the hash value
 // respective of the selected profile.
 // it takes the plaintext password to hash and output its hashed value
@@ -187,8 +186,8 @@ func (p *Profile) Hash(password []byte) ([]byte, error) {
 func (p *Profile) Compare(hashed, password []byte) error {
 	salt, err := parseFromHashToSalt(hashed)
 	if err != nil {
-		fmt.Printf("error: %v\n", err)
-		return err
+		fmt.Printf("compare parse error: %v\n", err)
+		return ErrMismatch
 	}
 
 	switch v := p.params.(type) {
@@ -220,7 +219,8 @@ func Compare(hashed, password []byte) error {
 
 	params, err := parseFromHashToParams(hashed)
 	if err != nil {
-		return err
+		fmt.Printf("compare parse error: %v\n", err)
+		return ErrMismatch
 	}
 
 	//fmt.Printf("PARAM TYPE: %T\n", params)

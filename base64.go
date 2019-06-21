@@ -14,9 +14,8 @@ import "encoding/base64"
 
 const alphabet = "./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
-var bcEncoding = base64.NewEncoding(alphabet)
-
 func base64Encode(src []byte) []byte {
+	bcEncoding := base64.NewEncoding(alphabet)
 	n := bcEncoding.EncodedLen(len(src))
 	dst := make([]byte, n)
 	bcEncoding.Encode(dst, src)
@@ -32,6 +31,7 @@ func base64Decode(src []byte) ([]byte, error) {
 		src = append(src, '=')
 	}
 
+	bcEncoding := base64.NewEncoding(alphabet)
 	dst := make([]byte, bcEncoding.DecodedLen(len(src)))
 	n, err := bcEncoding.Decode(dst, src)
 	if err != nil {
