@@ -1,6 +1,7 @@
 [![Documentation](https://godoc.org/github.com/unix4fun/passwd?status.svg)](http://godoc.org/github.com/unix4fun/passwd)
 [![Go Report Card](https://goreportcard.com/badge/github.com/unix4fun/passwd)](https://goreportcard.com/report/github.com/unix4fun/passwd)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![builds.sr.ht status](https://builds.sr.ht/~eau/passwd.svg)](https://builds.sr.ht/~eau/passwd?)
 
 # passwd
 A simple golang password hashing package
@@ -49,7 +50,7 @@ with your key derivation in order to attack it offline.
 
 Instanciate a password hashing profile:
 ```
-   p := passwd.New(passwd.Argon2idDefault)
+   p, err := passwd.New(passwd.Argon2idDefault)
 ````
 
 Hash your password:
@@ -77,7 +78,7 @@ done.
 
 Instanciate a password hashing profile:
 ```
-   p := passwd.NewMasked(passwd.Argon2idDefault)
+   p, err := passwd.NewMasked(passwd.Argon2idDefault)
 ````
 
 Hash your password:
@@ -95,7 +96,7 @@ done, that's it, now you store `hashed`
 
 check a hash against a password:
 ```
-   p := passwd.NewMasked(passwd.Argon2idDefault)
+   p, err := passwd.NewMasked(passwd.Argon2idDefault)
    err := p.Compare(hashedpassword, []byte("password"))
 ```
 
