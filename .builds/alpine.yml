@@ -1,0 +1,13 @@
+image: alpine/3.9
+packages: 
+    - go
+sources:
+    - https://git.sr.ht/~eau/passwd
+tasks:
+    - test: |
+        cd passwd
+        go test -v
+    - build: |
+        cd passwd
+        go build -v
+
