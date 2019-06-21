@@ -58,7 +58,7 @@ var (
 		Saltlen: 16,
 		Keylen:  32,
 		// salt
-		masked: false,
+		//Masked: false,
 	}
 
 	scryptParanoidParameters = ScryptParams{
@@ -68,7 +68,7 @@ var (
 		Saltlen: 32,
 		Keylen:  64,
 		// salt
-		masked: false,
+		//Masked: false,
 	}
 )
 
@@ -81,7 +81,7 @@ type ScryptParams struct {
 	Keylen  uint32 // 128 bits min.
 	// unexported
 	salt   []byte // my salt..
-	masked bool   // are parameters private
+	Masked bool   // are parameters private
 }
 
 func newScryptParamsFromFields(fields []string) (*ScryptParams, error) {
@@ -152,7 +152,7 @@ func (p *ScryptParams) generateFromParams(password []byte) ([]byte, error) {
 	salt64 := base64Encode(p.salt)
 
 	// params
-	if !p.masked {
+	if !p.Masked {
 		params = fmt.Sprintf("%c%d%c%d%c%d%c%d",
 			separatorRune, p.N,
 			separatorRune, p.R,

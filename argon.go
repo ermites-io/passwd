@@ -56,7 +56,7 @@ var (
 		Saltlen: 16,
 		Keylen:  16,
 		//salt
-		masked: false,
+		//masked: false,
 	}
 
 	// XXX need more test/analysis
@@ -68,7 +68,7 @@ var (
 		Saltlen: 16,
 		Keylen:  32,
 		//salt
-		masked: false,
+		//masked: false,
 	}
 
 	// XXX need more test/analysis
@@ -80,7 +80,7 @@ var (
 		Saltlen: 32,
 		Keylen:  64,
 		//salt
-		masked: false,
+		//masked: false,
 	}
 )
 
@@ -94,7 +94,7 @@ type Argon2Params struct {
 	Keylen  uint32
 	// unexported
 	salt   []byte // on compare only..
-	masked bool   // are parameters private
+	Masked bool   // are parameters private
 }
 
 // [0] password: 'prout' hashed: '$2id$aiOE.rPFUFkkehxc6utWY.$1$65536$8$32$Wv1IMP6xwaqVaQGOX6Oxe.eSEbozeRJLzln8ZlthZfS'
@@ -194,7 +194,7 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 	salt64 := base64Encode(p.salt)
 
 	// params
-	if !p.masked {
+	if !p.Masked {
 		params = fmt.Sprintf("%c%d%c%d%c%d%c%d",
 			separatorRune, p.Time,
 			separatorRune, p.Memory,

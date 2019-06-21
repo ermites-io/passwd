@@ -15,7 +15,8 @@ const (
 
 // BcryptParams are the parameters for the bcrypt key derivation.
 type BcryptParams struct {
-	Cost int
+	Cost   int
+	Masked bool // XXX UNUSED
 }
 
 func (bp *BcryptParams) generateFromPassword(password []byte) ([]byte, error) {
