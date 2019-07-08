@@ -1,5 +1,4 @@
 [![Documentation](https://godoc.org/git.sr.ht/~eau/passwd?status.svg)](http://godoc.org/git.sr.ht/~eau/passwd)
-[![Go Report Card](https://goreportcard.com/badge/git.sr.ht/~eau/passwd)](https://goreportcard.com/report/git.sr.ht/~eau/passwd)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![builds.sr.ht status](https://builds.sr.ht/~eau/passwd.svg)](https://builds.sr.ht/~eau/passwd?)
 

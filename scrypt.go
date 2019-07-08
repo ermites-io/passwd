@@ -142,6 +142,14 @@ func (p *ScryptParams) getSalt() error {
 	return nil
 }
 
+func (p *ScryptParams) deriveFromPassword(password []byte) ([]byte, error) {
+	key, err := scrypt.Key(password, p.salt, int(p.N), int(p.R), int(p.P), int(p.Keylen))
+	if err != nil {
+		return nil, err
+	}
+	return key, nil
+}
+
 //func (p *ScryptParams) generateFromPassword(password []byte) ([]byte, error) {
 func (p *ScryptParams) generateFromParams(password []byte) ([]byte, error) {
 	var hash bytes.Buffer

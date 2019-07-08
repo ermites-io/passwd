@@ -160,7 +160,24 @@ func NewCustom(params interface{}) (*Profile, error) {
 	return nil, ErrUnsupported
 }
 
-// Hash is the Profile method for computing the hash value
+// Derive is the Profile's method for computing a cryptographic key
+// usable with symmetric AEAD using the user provided Profile and password
+// it will return the derived key and associated salt
+func (p *Profile) Derive(password, salt []byte) ([]byte, error) {
+	switch v := p.params.(type) {
+	// Bcrypt is NOT supported to derive crypto keys
+	case ScryptParams:
+		v.salt = salt
+		return v.deriveFromPassword(password)
+	case Argon2Params:
+		v.salt = salt
+		return v.deriveFromPassword(password)
+	}
+	// key, salt, nil
+	return nil, ErrUnsupported
+}
+
+// Hash is the Profile's method for computing the hash value
 // respective of the selected profile.
 // it takes the plaintext password to hash and output its hashed value
 // ready for storage

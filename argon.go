@@ -181,6 +181,24 @@ func (p *Argon2Params) compare(hashed, password []byte) error {
 	return ErrMismatch
 }
 
+func (p *Argon2Params) deriveFromPassword(password []byte) (key []byte, err error) {
+	err = p.validate(&argonMinParameters)
+	if err != nil {
+		return nil, err
+	}
+
+	switch p.Version {
+	case Argon2i:
+		key = argon2.Key(password, p.salt, p.Time, p.Memory, p.Thread, p.Keylen)
+	case Argon2id:
+		fallthrough
+	default:
+		key = argon2.IDKey(password, p.salt, p.Time, p.Memory, p.Thread, p.Keylen)
+	}
+
+	return key, nil
+}
+
 func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 	var key []byte
 	var id, params string
@@ -188,7 +206,7 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 
 	err := p.validate(&argonMinParameters)
 	if err != nil {
-		return nil, ErrUnsafe
+		return nil, err
 	}
 
 	// need to b64.
