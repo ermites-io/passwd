@@ -161,8 +161,8 @@ func NewCustom(params interface{}) (*Profile, error) {
 }
 
 // Derive is the Profile's method for computing a cryptographic key
-// usable with symmetric AEAD using the user provided Profile and password
-// it will return the derived key and associated salt
+// usable with symmetric AEAD using the user provided Profile, password and salt
+// it will return the derived key.
 func (p *Profile) Derive(password, salt []byte) ([]byte, error) {
 	switch v := p.params.(type) {
 	// Bcrypt is NOT supported to derive crypto keys

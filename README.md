@@ -127,3 +127,16 @@ An example tool/usage lies in ```cmd/pcrypt``` in this repository, hopefully it 
 * [Argon2](https://en.wikipedia.org/wiki/Argon2) for today key stretching.
 * [Scrypt](http://en.wikipedia.org/wiki/Scrypt) for key stretching.
 * [Go](http://golang.org) because it works.
+
+
+# Resources
+
+[Send patches](https://git-send-email.io) and questions to
+[~eau/passwd@lists.sr.ht](https://lists.sr.ht/~eau/passwd).
+
+Subscribe to release announcements on
+[~eau/passwd-announce](https://lists.sr.ht/~eau/passwd-announce)
+
+Bugs & todo here: [~eau/passwd](https://todo.sr.ht/~eau/passwd)
+
+
