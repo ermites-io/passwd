@@ -93,31 +93,31 @@ func newScryptParamsFromFields(fields []string) (*ScryptParams, error) {
 	// salt
 	salt, err := base64Decode([]byte(fields[0])) // process the salt
 	if err != nil {
-		return nil, err
+		return nil, ErrParse
 	}
 	saltlen := uint32(len(salt))
 
 	nint, err := strconv.ParseInt(fields[1], 10, 32)
 	if err != nil {
-		return nil, err
+		return nil, ErrParse
 	}
 	n := uint32(nint)
 
 	rint, err := strconv.ParseInt(fields[2], 10, 32)
 	if err != nil {
-		return nil, err
+		return nil, ErrParse
 	}
 	r := uint32(rint)
 
 	pint, err := strconv.ParseInt(fields[3], 10, 32)
 	if err != nil {
-		return nil, err
+		return nil, ErrParse
 	}
 	p := uint32(pint)
 
 	keylenint, err := strconv.ParseInt(fields[4], 10, 32)
 	if err != nil {
-		return nil, err
+		return nil, ErrParse
 	}
 	keylen := uint32(keylenint)
 
@@ -202,7 +202,7 @@ func (p *ScryptParams) generateFromPassword(password []byte) ([]byte, error) {
 func (p *ScryptParams) compare(hashed, password []byte) error {
 	compared, err := p.generateFromParams(password)
 	if err != nil {
-		return err
+		return ErrMismatch
 	}
 
 	// sanity checks.

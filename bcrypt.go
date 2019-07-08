@@ -24,5 +24,9 @@ func (bp *BcryptParams) generateFromPassword(password []byte) ([]byte, error) {
 }
 
 func (bp *BcryptParams) compare(hashed, password []byte) error {
-	return bcrypt.CompareHashAndPassword(hashed, password)
+	err := bcrypt.CompareHashAndPassword(hashed, password)
+	if err != nil {
+		return ErrMismatch
+	}
+	return nil
 }

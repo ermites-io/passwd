@@ -122,19 +122,19 @@ func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 
 	memoryint, err := strconv.ParseInt(fields[2], 10, 32)
 	if err != nil {
-		return nil, err
+		return nil, ErrParse
 	}
 	memory := uint32(memoryint)
 
 	threadint, err := strconv.ParseInt(fields[3], 10, 32)
 	if err != nil {
-		return nil, err
+		return nil, ErrParse
 	}
 	thread := uint8(threadint)
 
 	keylenint, err := strconv.ParseInt(fields[4], 10, 32)
 	if err != nil {
-		return nil, err
+		return nil, ErrParse
 	}
 	keylen := uint32(keylenint)
 
