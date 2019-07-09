@@ -69,15 +69,15 @@ with your key derivation in order to attack it offline.
 ### Password Hashing (public parameters):
 
 create a password hashing object with *Argon2* default profile:  
-**`p, err := passwd.New(passwd.Argon2idDefault)`**
+	p, err := passwd.New(passwd.Argon2idDefault)
 
 
-Hash your password:  
-**`hashed, err := p.Hash( []byte("my1337p4ssw0rd!") )`**
+Hash your password:
+	hashed, err := p.Hash( []byte("my1337p4ssw0rd!") )
 
 
 done, that's it, now **`hashed`** contain the hashed password:  
-**`$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6`**
+	$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6
 
 
 ### Password Compare :
