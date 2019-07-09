@@ -66,6 +66,7 @@ with your key derivation in order to attack it offline.
 
 ## Examples 
 
+--------
 ### Password Hashing (public parameters):
 
 create a password hashing object with *Argon2* default profile:   
@@ -83,7 +84,7 @@ done, that's it, now **`hashed`** contain the hashed password:
 **`$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6`**
 
 
-### Password Compare :
+### Password Compare (public parameters / bcrypt) :
 
 check a hash against a password:   
 
@@ -91,6 +92,7 @@ check a hash against a password:
 
 done, `err` will be nil if the password matches the hash.
 
+--------
 
 ### Password Hashing (**masked parameters**):
 
@@ -115,6 +117,7 @@ check a hash against a password:
 **`err := p.Compare(hashed, []byte("password"))`**
 
 done.
+--------
 
 # Status
 
