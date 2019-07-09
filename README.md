@@ -101,9 +101,10 @@ create a password hashing profile:
 
 Hash your password:   
 
-**`hashed, err := p.Hash( []byte("mypassword") )`**  
+**`hashed, err := p.Hash( []byte("my1337p4ssw0rd!") )`**  
 
-done, that's it, now you store `hashed`
+done, that's it, now **`hashed`** contain the hashed password and parameters are
+masked.  
 
 **`$2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK`**
 
@@ -111,28 +112,18 @@ done, that's it, now you store `hashed`
 
 ## Password Compare (**masked parameters**) :
 
-check a hash against a password:
+check a hash against a password:  
 
-	p, err := passwd.NewMasked(passwd.Argon2idDefault)
-	
-	if err != nil {
-		panic(err)
-	}
-	
-	err := p.Compare(hashedpassword, []byte("password"))
-	
-	if err != nil {
-		panic(err)
-	}
-	
+**`err := p.Compare(hashed, []byte("password"))`**
 
 done.
 
 # Important Notes
 
-bcrypt() is just a wrapper to x/crypto/bcrypt, only scrypt and argon support MaskedParameters.
-bcrypt() is implemented for migration ease purposes, Compare will works perfectly with bcrypt 
-while encrypting new password and changing old ones can use the new "profile".
+bcrypt is just a wrapper to `x/crypto/bcrypt`, only scrypt and argon support masked parameters.
+
+bcrypt is implemented for migration purposes, **`passwd.Compare()`** will works perfectly with `x/crypto/bcrypt` hashed passwords while 
+encrypting new passwords can use the new "profile".
 
 # Changelog
 
@@ -142,12 +133,16 @@ while encrypting new password and changing old ones can use the new "profile".
 
 # Status
 
-This package exclusively uses crypto algorithm implementations shipped in go extended crypto packages (located in ```x/crypto/```)
+This package exclusively uses crypto algorithm implementations shipped in go extended crypto packages (located in `x/crypto/`)
 
-This is work in progress and the default are still being worked out.
-Feedback is welcome.
+This is a work in progress and the default are still being worked out/verified (feedback is welcome).
 
-An example tool/usage lies in ```cmd/pcrypt``` in this repository, hopefully it helps understanding how to use this package.
+An example tool is provided in this repository:  
+
+`go get -u git.sr.ht/~eau/passwd/cmd/pcrypt`
+
+
+hopefully it helps understanding how to use this package.
 
 ## Featuring (because there is always a star in your production..)
 
