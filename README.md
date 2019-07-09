@@ -82,7 +82,7 @@ done.
 
 ## example basic usage with masked parameters:
 
-Instanciate a password hashing profile:
+create a password hashing profile:
 >
 >   p, err := passwd.NewMasked(passwd.Argon2idDefault)
 >
@@ -101,10 +101,17 @@ done, that's it, now you store `hashed`
 ## example masked parameters password check/comparison :
 
 check a hash against a password:
-```
-   p, err := passwd.NewMasked(passwd.Argon2idDefault)
-   err := p.Compare(hashedpassword, []byte("password"))
-```
+>
+>   p, err := passwd.NewMasked(passwd.Argon2idDefault)
+>   if err != nil {
+>       panic(err)
+>   }
+>
+>   err := p.Compare(hashedpassword, []byte("password"))
+>   if err != nil {
+>       panic(err)
+>   }
+>
 
 done.
 
@@ -145,5 +152,3 @@ Subscribe to release announcements on
 [~eau/passwd-announce](https://lists.sr.ht/~eau/passwd-announce)
 
 Bugs & todo here: [~eau/passwd](https://todo.sr.ht/~eau/passwd)
-
-
