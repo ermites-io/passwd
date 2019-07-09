@@ -40,11 +40,11 @@ var vectorNewTests = []struct {
 }
 
 var vectorHashCompareTests = []struct {
-	profile          HashProfile
-	password_hash    string
-	password_compare string
-	expected_hash    error
-	expected_compare error
+	profile         HashProfile
+	passwordHash    string
+	passwordCompare string
+	expectedHash    error
+	expectedCompare error
 }{
 	// argon
 	{Argon2idDefault, "1", "1", nil, nil},
@@ -97,19 +97,19 @@ func TestHashCompare(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not New() on #%d\n", i)
 		}
-		hash, err := myprofile.Hash([]byte(test.password_hash))
-		if err != test.expected_hash {
-			t.Fatalf("test #%d (hash): profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.expected_hash)
+		hash, err := myprofile.Hash([]byte(test.passwordHash))
+		if err != test.expectedHash {
+			t.Fatalf("test #%d (hash): profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.expectedHash)
 		}
 
-		err = Compare(hash, []byte(test.password_compare))
-		if err != test.expected_compare {
-			t.Fatalf("test #%d (Compare): profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.expected_compare)
+		err = Compare(hash, []byte(test.passwordCompare))
+		if err != test.expectedCompare {
+			t.Fatalf("test #%d (Compare): profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.expectedCompare)
 		}
 
-		err = myprofile.Compare(hash, []byte(test.password_compare))
-		if err != test.expected_compare {
-			t.Fatalf("test #%d (passwd.Compare): profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.expected_compare)
+		err = myprofile.Compare(hash, []byte(test.passwordCompare))
+		if err != test.expectedCompare {
+			t.Fatalf("test #%d (passwd.Compare): profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.expectedCompare)
 		}
 	}
 }

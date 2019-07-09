@@ -17,6 +17,6 @@ const (
 	ErrUnsupported = Error("unsupported")
 	// ErrMismatch is returned when Compare() call does not match
 	ErrMismatch = Error("mismatch")
-	// ErrValidate is to validate password hashing parameters strength
+	// ErrUnsafe is to notify of password hashing parameters strength
 	ErrUnsafe = Error("unsafe parameters")
 )
