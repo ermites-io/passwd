@@ -61,43 +61,38 @@ method.
 An attacker would have to not only grab the stored password, but also to guess the parameters you use
 with your key derivation in order to attack it offline.
 
-!!! IMPORTANT !!!  This is NOT what makes your hash safe, it just makes it less obvious.
+**!!! IMPORTANT !!! This is NOT what makes your hash safe, it just makes it slightly harder to attack offline.**
 
 
-## Example Password Hashing (public parameters):
+## Examples 
 
-Instanciate a password hashing profile:
+### Password Hashing (public parameters):
 
+create a password hashing object with *Argon2* default profile:  
 **`p, err := passwd.New(passwd.Argon2idDefault)`**
 
 
-Hash your password:
->
->   hashed, err := p.Hash( []byte("mypassword") )
->
-
-done, that's it, now you store `hashed`
->
->   '$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6'
->
+Hash your password:  
+**`hashed, err := p.Hash( []byte("my1337p4ssw0rd!") )`**
 
 
-## example password check/comparison :
-
-check a hash against a password:
->
->   err := passwd.Compare(hashedpassword, []byte("password"))
->
-
-done.
+done, that's it, now **`hashed`** contain the hashed password:  
+**`$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6`**
 
 
-## example basic usage with masked parameters:
+### Password Compare :
 
-create a password hashing profile:
->
->   p, err := passwd.NewMasked(passwd.Argon2idDefault)
->
+check a hash against a password:  
+**`err := passwd.Compare(hashed, []byte("password"))`**
+
+done, `err` will be nil if the password matches the hash.
+
+
+## Password Hashing **WITH masked parameters**:
+
+create a password hashing profile:  
+**`p, err := passwd.NewMasked(passwd.Argon2idDefault)`**
+
 
 Hash your password:
 >
