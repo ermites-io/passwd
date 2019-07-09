@@ -32,6 +32,15 @@ You can also decide to customize using your own Argon2 or Scrypt custom paramete
 
 # How to Use the package
 
+## About Hashing Profiles
+It is an attempt to dimension crypto parameters to common use cases (interactive/web auth/blabla) vs file storage
+
+- Default  : ~interactive.
+- Paranoid : file storage.
+
+Custom profiles allow a user to define its own hashing parameters if those
+default don't fit.
+
 ## Public vs Masked parameters
 
 Commonly password hashing includes hashing parameters in order to provide interoperability.
