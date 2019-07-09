@@ -12,18 +12,6 @@ import (
 // TestVectors
 //
 //
-/*
-var vectorNewTests = []struct {
-	pro HashProfile,
-	err error,
-}{
-	{ Argon2idDefault, nil },
-	{ Argon2idDefault, nil },
-	{ Argon2idDefault, nil },
-	{ Argon2idDefault, nil },
-}
-*/
-
 var vectorNewTests = []struct {
 	profile  HashProfile
 	expected error

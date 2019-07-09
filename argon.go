@@ -107,7 +107,7 @@ func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 	// salt
 	salt, err := base64Decode([]byte(fields[0])) // process the salt
 	if err != nil {
-		fmt.Printf("b64 decode error: %v\n", err)
+		//fmt.Printf("b64 decode error: %v\n", err)
 		return nil, ErrParse
 	}
 	saltlen := uint32(len(salt))
@@ -115,7 +115,7 @@ func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 	// ARGON FIELD: ["mezIC/cmChATxAfFFe9ele" "2" "65536" "8" "32" "omYy81uRZcZv6JkbH17wA0s1CSpH4UQttXBB42oKMXK"]
 	timeint, err := strconv.ParseInt(fields[1], 10, 32)
 	if err != nil {
-		fmt.Printf("invalid time decode error: %v\n", err)
+		//fmt.Printf("invalid time decode error: %v\n", err)
 		return nil, ErrParse
 	}
 	time := uint32(timeint)
