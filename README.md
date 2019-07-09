@@ -105,17 +105,13 @@ check a hash against a password:
 >   p, err := passwd.NewMasked(passwd.Argon2idDefault)
 >
 >   if err != nil {
->
 >       panic(err)
->
 >   }
 >
 >   err := p.Compare(hashedpassword, []byte("password"))
 >
 >   if err != nil {
->
 >       panic(err)
->
 >   }
 >
 
