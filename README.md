@@ -108,8 +108,6 @@ masked.
 
 **`$2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK`**
 
-
-
 ## Password Compare (**masked parameters**) :
 
 check a hash against a password:  
@@ -117,19 +115,6 @@ check a hash against a password:
 **`err := p.Compare(hashed, []byte("password"))`**
 
 done.
-
-# Important Notes
-
-bcrypt is just a wrapper to `x/crypto/bcrypt`, only scrypt and argon support masked parameters.
-
-bcrypt is implemented for migration purposes, **`passwd.Compare()`** will works perfectly with `x/crypto/bcrypt` hashed passwords while 
-encrypting new passwords can use the new "profile".
-
-# Changelog
-
-* v0.1.2: fix hash parsing.
-* v0.1.1: fix /issues/1
-* v0.1.0: initial release
 
 # Status
 
@@ -139,10 +124,24 @@ This is a work in progress and the default are still being worked out/verified (
 
 An example tool is provided in this repository:  
 
-`go get -u git.sr.ht/~eau/passwd/cmd/pcrypt`
+**`go get -u git.sr.ht/~eau/passwd/cmd/pcrypt`**
+
+hopefully this helps understanding how to use this package.
+
+## Changelog
+
+* v0.1.2: fix hash parsing.
+* v0.1.1: fix /issues/1
+* v0.1.0: initial release
 
 
-hopefully it helps understanding how to use this package.
+## Important Notes
+
+bcrypt is just a wrapper to `x/crypto/bcrypt`, only scrypt and argon support masked parameters.
+
+bcrypt is implemented for migration purposes, **`passwd.Compare()`** will works perfectly with `x/crypto/bcrypt` hashed passwords while 
+using a modern profile to store new passwords.
+
 
 ## Featuring (because there is always a star in your production..)
 
