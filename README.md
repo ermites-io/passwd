@@ -49,6 +49,18 @@ if no interoperability is needed (outside your authentication needs) and to make
 attacker, you might "mask" your parameters (instead of embedding them in the resulting hash).
 
 ### Public parameters 
+>
+>
+>                             git.sr.ht/~eau/passwd
+>                           __________________________
+>                          /                          \
+>    "my1337p4ssw0rd" ---> | p := New() -> p.Hash("") | ----> "$2id$aiOE.rPFUFkkehxc6utWY.$1$65536$8$32$Wv1IMP6xwaqVaQGOX6Oxe.eSEbozeRJLzln8ZlthZfS"
+>                          \__________________________/                                   ^^^^^^^^^^^^^
+>                                                                                        /
+>                                                                                  hashing
+>                                                                                  parameters
+>
+>
 allows you to use the hashed password to directly provide a simple ```passwd.Compare()``` function.
 you can transparently use different hashing profiles Compare will use parameters
 provided in the hash to do the comparison
