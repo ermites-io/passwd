@@ -16,7 +16,7 @@ Unfortunately they requires various non-trivial parameters to be used properly.
 This package attempts to provide a safe and easy interface to produce/verify a hashed password,
 while giving the ability to tune for specific/custom needs if necessary.
 
-3 algorithms are implemented:
+3 algorithms are used:
 
 - bcrypt (using x/crypto/bcrypt, FOR LEGACY reasons)
 - scrypt (using x/crypto/scrypt)
@@ -28,47 +28,54 @@ Parameters choices are limited and translated into static "profiles":
 - Paranoid
 (as it is WIP, it might switch to 3 profiles based on usage needs like : interactive, default, paranoid)
 
+You can also decide to customize using your own Argon2 or Scrypt custom parameters through this package.
+
 # How to Use the package
 
 ## Public vs Masked parameters
 
-Commonly password hashing includes hashing parameters in order to make it easy for interoperability.
+Commonly password hashing includes hashing parameters in order to provide interoperability.
 
-But you might decide you don't interoperate with other systems and you control your authentication mechanism,
-as such you might be willing to make things slightly more annoying for an attacker reaching your stored password 
-by "masking" your parameters (instead of embedding them in the resulting hash)
+if no interoperability is needed (outside your authentication needs) and to make things slightly more annoying for a regular 
+attacker, you might "mask" your parameters (instead of embedding them in the resulting hash).
 
-Public parameters allows you to use the hashed password to directly provide a simple ```passwd.Compare()``` function.
-Masked parameters requires you to say what parameters you use AND to call the ```(p *Profile).Compare()``` method 
-of the profile.
+### Public parameters 
+allows you to use the hashed password to directly provide a simple ```passwd.Compare()``` function.
+you can transparently use different hashing profiles Compare will use parameters
+provided in the hash to do the comparison
+### Masked parameters
+Masked parameters requires the user to state what parameters are used AND to call the ```(p *Profile).Compare()``` method 
+of the associated profile.
 
-Attacker would have to not only grab the stored password, but also to guess the parameters you use
+!!! IMPORTANT !!!  This is NOT what makes your hash safe, it just makes it less obvious.
+
+An attacker would have to not only grab the stored password, but also to guess the parameters you use
 with your key derivation in order to attack it offline.
 
 ## example basic usage with public parameters:
 
 Instanciate a password hashing profile:
-```
-   p, err := passwd.New(passwd.Argon2idDefault)
-````
+>
+>   p, err := passwd.New(passwd.Argon2idDefault)
+>
 
 Hash your password:
-```
-   hashed, err := p.Hash( []byte("mypassword") )
-```
+>
+>   hashed, err := p.Hash( []byte("mypassword") )
+>
 
 done, that's it, now you store `hashed`
-```
-   hashed: '$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6'
-```
+>
+>   hashed: '$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6'
+>
 
 
 ## example password check/comparison :
 
 check a hash against a password:
-```
-   err := passwd.Compare(hashedpassword, []byte("password"))
-```
+>
+>   err := passwd.Compare(hashedpassword, []byte("password"))
+>
 
 done.
 
@@ -76,19 +83,19 @@ done.
 ## example basic usage with masked parameters:
 
 Instanciate a password hashing profile:
-```
-   p, err := passwd.NewMasked(passwd.Argon2idDefault)
-````
+>
+>   p, err := passwd.NewMasked(passwd.Argon2idDefault)
+>
 
 Hash your password:
-```
-   hashed, err := p.Hash( []byte("mypassword") )
-```
+>
+>   hashed, err := p.Hash( []byte("mypassword") )
+>
 
 done, that's it, now you store `hashed`
-```
-   hashed: $2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK
-```
+>
+>   hashed: $2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK
+>
 
 
 ## example masked parameters password check/comparison :
