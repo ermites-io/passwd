@@ -68,29 +68,29 @@ with your key derivation in order to attack it offline.
 
 ### Password Hashing (public parameters):
 
-create a password hashing object with *Argon2* default profile:  
-	p, err := passwd.New(passwd.Argon2idDefault)
+create a password hashing object with *Argon2* default profile:   
+**`p, err := passwd.New(passwd.Argon2idDefault)`**
 
 
-Hash your password:
-	hashed, err := p.Hash( []byte("my1337p4ssw0rd!") )
+Hash your password:   
+**`hashed, err := p.Hash( []byte("my1337p4ssw0rd!") )`**
 
 
-done, that's it, now **`hashed`** contain the hashed password:  
-	$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6
+done, that's it, now **`hashed`** contain the hashed password:   
+**`$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6`**
 
 
 ### Password Compare :
 
-check a hash against a password:  
+check a hash against a password:   
 **`err := passwd.Compare(hashed, []byte("password"))`**
 
 done, `err` will be nil if the password matches the hash.
 
 
-## Password Hashing **WITH masked parameters**:
+### Password Hashing (**masked parameters**):
 
-create a password hashing profile:  
+create a password hashing profile:   
 **`p, err := passwd.NewMasked(passwd.Argon2idDefault)`**
 
 
@@ -105,7 +105,7 @@ done, that's it, now you store `hashed`
 >
 
 
-## example masked parameters password check/comparison :
+## Password Compare (**masked parameters**) :
 
 check a hash against a password:
 >
