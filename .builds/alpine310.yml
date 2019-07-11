@@ -2,7 +2,7 @@ image: alpine/3.10
 packages: 
     - go
     - make
-environement:
+environment:
     PATH: $PATH:~/go/bin
 sources:
     - https://git.sr.ht/~eau/passwd
