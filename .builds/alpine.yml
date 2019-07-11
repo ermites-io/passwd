@@ -6,8 +6,8 @@ sources:
 tasks:
     - lint: |
         go get -u github.com/gojp/goreportcard/cmd/goreportcard-cli
-	cd passwd
-	~/go/bin/goreportcard-cli -t 80.0
+        cd passwd
+        ~/go/bin/goreportcard-cli -t 80.0
     - test: |
         cd passwd
         go test -v
