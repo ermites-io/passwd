@@ -2,10 +2,13 @@ image: alpine/3.10
 packages: 
     - go
     - make
+environement:
+    PATH: $PATH:~/go/bin
 sources:
     - https://git.sr.ht/~eau/passwd
 tasks:
     - lint: |
+        . ~/.buildenv
         go get -u github.com/gojp/goreportcard/cmd/goreportcard-cli
         cd ~/go/src/github.com/gojp/goreportcard
         make install
