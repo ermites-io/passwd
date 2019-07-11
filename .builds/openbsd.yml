@@ -11,13 +11,13 @@ tasks:
         . ~/.buildenv
         go get -u github.com/gojp/goreportcard/cmd/goreportcard-cli
         cd ~/go/src/github.com/gojp/goreportcard
-        make install
+        gmake install
         cd ~/passwd
         ~/go/bin/goreportcard-cli -t 80.0
     - test: |
-        cd passwd
+        cd ~/passwd
         go test -v
     - build: |
-        cd passwd
+        cd ~/passwd
         go build -v
 
