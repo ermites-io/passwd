@@ -211,9 +211,21 @@ func (p *Profile) Compare(hashed, password []byte) error {
 	case BcryptParams:
 		return v.compare(hashed, password)
 	case ScryptParams:
+		// we had a subtle bug where a shorter salt with the same
+		// password encrypted would still match, as such you could have
+		// potentially generated thousands of small salted password
+		// to bruteforce and ran against the comparison function to
+		// find a collision which requires less power salts HAVE to
+		// be the same size that's it.
+		if len(salt) != int(v.Saltlen) {
+			return ErrMismatch
+		}
 		v.salt = salt
 		return v.compare(hashed, password)
 	case Argon2Params:
+		if len(salt) != int(v.Saltlen) {
+			return ErrMismatch
+		}
 		v.salt = salt
 		return v.compare(hashed, password)
 	}

@@ -66,10 +66,10 @@ func parseFromHashToSalt(hashed []byte) ([]byte, error) {
 		fallthrough
 	case idArgon2i:
 		fallthrough
-	case idArgon2id:
+	case idArgon2id: // with different salt len it might have matched.
 		salt, err := base64Decode([]byte(fields[1])) // process the salt
 		if err != nil {
-			return nil, err
+			return nil, ErrParse
 		}
 		return salt, nil
 	}

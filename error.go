@@ -13,6 +13,8 @@ func (e Error) Error() string { return string(e) }
 const (
 	// ErrParse when a parse error happened
 	ErrParse = Error("parse error")
+	// ErrHash when a hashing error occurs
+	ErrHash = Error("hash error")
 	// ErrUnsupported when a feature is not supported
 	ErrUnsupported = Error("unsupported")
 	// ErrMismatch is returned when Compare() call does not match

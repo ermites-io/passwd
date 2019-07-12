@@ -5,6 +5,8 @@ package passwd
 import (
 	"fmt"
 	"testing"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 //
@@ -56,6 +58,104 @@ var vectorHashCompareTests = []struct {
 	{BcryptDefault, "12345678901234567890123456789", "123456789012345678901234567890", nil, ErrMismatch},
 }
 
+var vectorNewCustomTest = []struct {
+	params            interface{}
+	profileEqual      HashProfile
+	passwordToHash    string
+	expectedNewCustom error
+	expectedHash      error
+	expectedCompare   error
+}{
+	{Argon2Params{ // Argon2idDefault aka MATCHING CONDITIONS
+		Version: Argon2id,
+		Time:    1,
+		Memory:  64 * 1024,
+		Thread:  16,
+		Saltlen: 16,
+		Keylen:  32,
+		Masked:  true,
+	}, Argon2idDefault, "testpassword", nil, nil, nil},
+	{Argon2Params{ // NON MATCHING
+		Version: Argon2id,
+		Time:    1,
+		Memory:  64 * 1024,
+		Thread:  16,
+		Saltlen: 32, // non matching param
+		Keylen:  32,
+		Masked:  true,
+	}, Argon2idDefault, "testpassword", nil, nil, ErrMismatch},
+	{Argon2Params{ // NON MATCHING
+		Version: Argon2id,
+		Time:    1,
+		Memory:  64 * 1024,
+		Thread:  16,
+		Saltlen: 16,
+		Keylen:  16, // non matching param
+		Masked:  true,
+	}, Argon2idDefault, "testpassword", nil, nil, ErrMismatch},
+	{Argon2Params{ // NON MATCHING
+		Version: Argon2id,
+		Time:    1,
+		Memory:  64 * 1024,
+		Thread:  8, // non matching param
+		Saltlen: 16,
+		Keylen:  32,
+		Masked:  true,
+	}, Argon2idDefault, "testpassword", nil, nil, ErrMismatch},
+	{Argon2Params{ // NON MATCHING
+		Version: Argon2id,
+		Time:    1,
+		Memory:  32 * 1024, // non matching param
+		Thread:  16,
+		Saltlen: 16,
+		Keylen:  32,
+		Masked:  true,
+	}, Argon2idDefault, "testpassword", nil, nil, ErrMismatch},
+	{ScryptParams{ // ScryptDefault aka MATCHING CONDITION
+		N:       1 << 16,
+		R:       8,
+		P:       1,
+		Saltlen: 16,
+		Keylen:  32,
+		Masked:  true,
+	}, ScryptDefault, "testpassword", nil, nil, nil},
+	{ScryptParams{ // NON MATCHING
+		N:       1 << 16,
+		R:       8,
+		P:       1,
+		Saltlen: 10, // non matching param
+		Keylen:  32,
+		Masked:  true,
+	}, ScryptDefault, "testpassword", nil, nil, ErrMismatch},
+	{ScryptParams{ // NON MATCHING
+		N:       1 << 16,
+		R:       8,
+		P:       1,
+		Saltlen: 16,
+		Keylen:  16, // non matching param
+		Masked:  true,
+	}, ScryptDefault, "testpassword", nil, nil, ErrMismatch},
+	{ScryptParams{ // NON MATCHING
+		N:       1 << 16,
+		R:       4, // non matching param
+		P:       1,
+		Saltlen: 16,
+		Keylen:  32,
+		Masked:  true,
+	}, ScryptDefault, "testpassword", nil, nil, ErrMismatch},
+	{ScryptParams{ // NON MATCHING
+		N:       1 << 14, // non matching param
+		R:       8,
+		P:       1,
+		Saltlen: 16,
+		Keylen:  32,
+		Masked:  true,
+	}, ScryptDefault, "testpassword", nil, nil, ErrMismatch},
+	{BcryptParams{
+		Cost: bcrypt.DefaultCost,
+	}, BcryptDefault, "testpassword", nil, nil, nil},
+}
+
 //
 //
 // TestFunction
@@ -75,6 +175,41 @@ func TestNewMasked(t *testing.T) {
 		myprofile, err := NewMasked(test.profile)
 		if err != test.expected {
 			t.Fatalf("test #%d: profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.expected)
+		}
+	}
+}
+
+func TestNewCustom(t *testing.T) {
+	for i, test := range vectorNewCustomTest {
+		myprofileCustom, err := NewCustom(test.params)
+		if err != test.expectedNewCustom {
+			t.Fatalf("test #%d: profile: %v err: %v vs expected: %v\n", i, test.params, err, test.expectedNewCustom)
+		}
+
+		myprofileOrig, err := NewMasked(test.profileEqual)
+		if err != nil {
+			t.Fatalf("test #%d: profile: %d err: %v vs expected: %v\n", i, test.profileEqual, err, test.expectedNewCustom)
+		}
+
+		hashCustom, err := myprofileCustom.Hash([]byte(test.passwordToHash))
+		if err != test.expectedHash {
+			t.Fatalf("test #%d (hash): profile: %v err: %v vs expected: %v\n", i, test.params, err, test.expectedHash)
+		}
+
+		hashOrig, err := myprofileOrig.Hash([]byte(test.passwordToHash))
+		if err != test.expectedHash {
+			t.Fatalf("test #%d (hash): profile: %d err: %v vs expected: %v\n", i, test.profileEqual, err, test.expectedHash)
+		}
+
+		// we share the params so it should match
+		err = myprofileOrig.Compare(hashCustom, []byte(test.passwordToHash))
+		if err != test.expectedCompare {
+			t.Fatalf("test #%d (passwd.Compare): profile: %v err: %v vs expected: %v\n", i, test.params, err, test.expectedCompare)
+		}
+
+		err = myprofileCustom.Compare(hashOrig, []byte(test.passwordToHash))
+		if err != test.expectedCompare {
+			t.Fatalf("test #%d (passwd.Compare): profile: %d err: %v vs expected: %v\n", i, test.profileEqual, err, test.expectedCompare)
 		}
 	}
 }

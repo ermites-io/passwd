@@ -257,7 +257,7 @@ func (p *Argon2Params) getSalt() error {
 	p.salt = make([]byte, p.Saltlen)
 	n, err := rand.Read(p.salt)
 	if err != nil || n != int(p.Saltlen) {
-		return err
+		return ErrHash
 	}
 	return nil
 }
