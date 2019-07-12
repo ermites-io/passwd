@@ -131,6 +131,12 @@ hopefully this helps understanding how to use this package.
 
 ## Changelog
 
+* v0.1.3: 
+	* fix a salted+masked+custom profile comparison issue.
+	* NewCustom example+tests (issue #3)
+	* NewMasked tests (issue #1)
+	* bcrypt is NOT supported in masked params mode.
+	* minor cleanups.
 * v0.1.2: fix hash parsing.
 * v0.1.1: fix /issues/1
 * v0.1.0: initial release
