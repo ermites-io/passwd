@@ -10,9 +10,7 @@ import (
 )
 
 const (
-	//separatorChar = '$'
 	separatorRune = rune('$')
-	//separatorStr  = "$"
 )
 
 var (
@@ -24,7 +22,6 @@ func token(c rune) bool {
 }
 
 func parseFromHashToParams(hashed []byte) (interface{}, error) {
-
 	fields := strings.FieldsFunc(string(hashed), token)
 	if len(fields) < 2 {
 		return nil, ErrParse
@@ -47,7 +44,6 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 	case idArgon2i:
 		fallthrough
 	case idArgon2id:
-		//fmt.Printf("argon2id compare!\n")
 		ap, err := newArgon2ParamsFromFields(fields[1:]) // mismatch.
 		if err != nil {
 			// XXX wrapp the error
