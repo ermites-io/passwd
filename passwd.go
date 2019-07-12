@@ -99,20 +99,15 @@ func New(profile HashProfile) (*Profile, error) {
 // "masked" translate to the fact that no hash parameters will be provided in
 // the resulting hash.
 func NewMasked(profile HashProfile) (*Profile, error) {
-	switch profile {
-	case Argon2idDefault, Argon2idParanoid, ScryptDefault, ScryptParanoid, BcryptDefault, BcryptParanoid:
-		var p Profile
+	var p Profile
+	var err error
 
+	switch profile {
+	case Argon2idDefault, Argon2idParanoid, ScryptDefault, ScryptParanoid:
 		// all authorized
 		mparams := params[profile]
 
 		switch v := mparams.(type) {
-		case BcryptParams:
-			v.Masked = true
-			p = Profile{
-				t:      profile,
-				params: v,
-			}
 		case ScryptParams:
 			v.Masked = true
 			p = Profile{
@@ -126,10 +121,11 @@ func NewMasked(profile HashProfile) (*Profile, error) {
 				params: v,
 			}
 		}
-		return &p, nil
+	default:
+		err = ErrUnsupported
 	}
 
-	return nil, ErrUnsupported
+	return &p, err
 }
 
 // NewCustom instanciates a new Profile using user defined hash parameters

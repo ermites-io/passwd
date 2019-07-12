@@ -19,12 +19,29 @@ type BcryptParams struct {
 	Masked bool // XXX UNUSED
 }
 
+func newBcryptParamsFromHash(hashed []byte) (*BcryptParams, error) {
+	hashCost, err := bcrypt.Cost(hashed)
+	if err != nil {
+		return nil, err
+	}
+
+	bp := BcryptParams{
+		Cost: hashCost,
+	}
+	return &bp, nil
+}
+
 func (bp *BcryptParams) generateFromPassword(password []byte) ([]byte, error) {
 	return bcrypt.GenerateFromPassword(password, bp.Cost)
 }
 
 func (bp *BcryptParams) compare(hashed, password []byte) error {
-	err := bcrypt.CompareHashAndPassword(hashed, password)
+	hashCost, err := bcrypt.Cost(hashed)
+	if err != nil || hashCost != bp.Cost {
+		return ErrMismatch
+	}
+
+	err = bcrypt.CompareHashAndPassword(hashed, password)
 	if err != nil {
 		return ErrMismatch
 	}

@@ -29,6 +29,21 @@ var vectorNewTests = []struct {
 	{BcryptCustom, ErrUnsupported},
 }
 
+var vectorNewMaskedTests = []struct {
+	profile  HashProfile
+	expected error
+}{
+	{Argon2idDefault, nil},
+	{Argon2idParanoid, nil},
+	{ScryptDefault, nil},
+	{ScryptParanoid, nil},
+	{BcryptDefault, ErrUnsupported},
+	{BcryptParanoid, ErrUnsupported},
+	{Argon2Custom, ErrUnsupported},
+	{ScryptCustom, ErrUnsupported},
+	{BcryptCustom, ErrUnsupported},
+}
+
 var vectorHashCompareTests = []struct {
 	profile         HashProfile
 	passwordHash    string
@@ -151,9 +166,22 @@ var vectorNewCustomTest = []struct {
 		Keylen:  32,
 		Masked:  true,
 	}, ScryptDefault, "testpassword", nil, nil, ErrMismatch},
-	{BcryptParams{
+}
+
+var vectorNewCustomTestBcrypt = []struct {
+	params            interface{}
+	profileEqual      HashProfile
+	passwordToHash    string
+	expectedNewCustom error
+	expectedHash      error
+	expectedCompare   error
+}{
+	{BcryptParams{ // MATCHING CONDITION
 		Cost: bcrypt.DefaultCost,
 	}, BcryptDefault, "testpassword", nil, nil, nil},
+	{BcryptParams{ // Non matching
+		Cost: bcrypt.MinCost,
+	}, BcryptDefault, "testpassword", nil, nil, ErrMismatch},
 }
 
 //
@@ -171,7 +199,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestNewMasked(t *testing.T) {
-	for i, test := range vectorNewTests {
+	for i, test := range vectorNewMaskedTests {
 		myprofile, err := NewMasked(test.profile)
 		if err != test.expected {
 			t.Fatalf("test #%d: profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.expected)
@@ -187,6 +215,41 @@ func TestNewCustom(t *testing.T) {
 		}
 
 		myprofileOrig, err := NewMasked(test.profileEqual)
+		if err != nil {
+			t.Fatalf("test #%d: profile: %d err: %v vs expected: %v\n", i, test.profileEqual, err, test.expectedNewCustom)
+		}
+
+		hashCustom, err := myprofileCustom.Hash([]byte(test.passwordToHash))
+		if err != test.expectedHash {
+			t.Fatalf("test #%d (hash): profile: %v err: %v vs expected: %v\n", i, test.params, err, test.expectedHash)
+		}
+
+		hashOrig, err := myprofileOrig.Hash([]byte(test.passwordToHash))
+		if err != test.expectedHash {
+			t.Fatalf("test #%d (hash): profile: %d err: %v vs expected: %v\n", i, test.profileEqual, err, test.expectedHash)
+		}
+
+		// we share the params so it should match
+		err = myprofileOrig.Compare(hashCustom, []byte(test.passwordToHash))
+		if err != test.expectedCompare {
+			t.Fatalf("test #%d (passwd.Compare): profile: %v err: %v vs expected: %v\n", i, test.params, err, test.expectedCompare)
+		}
+
+		err = myprofileCustom.Compare(hashOrig, []byte(test.passwordToHash))
+		if err != test.expectedCompare {
+			t.Fatalf("test #%d (passwd.Compare): profile: %d err: %v vs expected: %v\n", i, test.profileEqual, err, test.expectedCompare)
+		}
+	}
+}
+
+func TestNewCustomBcrypt(t *testing.T) {
+	for i, test := range vectorNewCustomTestBcrypt {
+		myprofileCustom, err := NewCustom(test.params)
+		if err != test.expectedNewCustom {
+			t.Fatalf("test #%d: profile: %v err: %v vs expected: %v\n", i, test.params, err, test.expectedNewCustom)
+		}
+
+		myprofileOrig, err := New(test.profileEqual)
 		if err != nil {
 			t.Fatalf("test #%d: profile: %d err: %v vs expected: %v\n", i, test.profileEqual, err, test.expectedNewCustom)
 		}
@@ -271,7 +334,7 @@ func ExampleNewMasked() {
 }
 
 func ExampleNewCustom() {
-	p, err := NewCustom(Argon2Params{
+	customParams := Argon2Params{
 		Version: Argon2id,
 		Time:    1,
 		Memory:  32 * 1024,
@@ -279,7 +342,8 @@ func ExampleNewCustom() {
 		Saltlen: 16,
 		Keylen:  32,
 		Masked:  true,
-	})
+	}
+	p, err := NewCustom(customParams)
 	if err != nil {
 		panic(err)
 	}

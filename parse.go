@@ -29,10 +29,12 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 
 	switch fields[0] {
 	case idBcrypt:
-		//fmt.Printf("bcrypt compare!\n")
-		bp := BcryptParams{}
-		//return bp.Compare(hashed, password)
-		return bp, nil
+		bp, err := newBcryptParamsFromHash(hashed)
+		if err != nil {
+			return nil, err
+		}
+
+		return *bp, nil
 	case idScrypt:
 		//fmt.Printf("scrypt compare!\n")
 		sp, err := newScryptParamsFromFields(fields[1:]) // mismatch.
