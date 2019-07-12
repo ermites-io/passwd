@@ -168,8 +168,15 @@ func (p *Argon2Params) compare(hashed, password []byte) error {
 
 	// yes in case things are padded by mistake depending on storage
 	// whatever.. the params tells us what to verify.
+	//
+	// we had a subtle bug where a shorter salt with the same
+	// password encrypted would still match, as such you could have
+	// potentially generated thousands of small salted password
+	// to bruteforce and ran against the comparison function to
+	// find a collision which requires less power salts HAVE to
+	// be the same size that's it.
 	hashlen := uint32(len(compared))
-	if uint32(len(hashed)) < hashlen {
+	if uint32(len(hashed)) < hashlen || len(p.salt) != int(p.Saltlen) {
 		return ErrMismatch
 	}
 
