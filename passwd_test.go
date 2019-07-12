@@ -270,6 +270,27 @@ func ExampleNewMasked() {
 	// Output: argon hashed
 }
 
+func ExampleNewCustom() {
+	p, err := NewCustom(Argon2Params{
+		Version: Argon2id,
+		Time:    1,
+		Memory:  32 * 1024,
+		Thread:  8,
+		Saltlen: 16,
+		Keylen:  32,
+		Masked:  true,
+	})
+	if err != nil {
+		panic(err)
+	}
+	_, err = p.Hash([]byte("mylamepass!!"))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("custom argon hashed")
+	// Output: custom argon hashed
+}
+
 func ExampleCompare() {
 	hashedPassword := []byte("$2id$aiOE.rPFUFkkehxc6utWY.$1$65536$8$32$Wv1IMP6xwaqVaQGOX6Oxe.eSEbozeRJLzln8ZlthZfS")
 	err := Compare(hashedPassword, []byte("prout"))
