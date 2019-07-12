@@ -79,9 +79,8 @@ type ScryptParams struct {
 	P       uint32 // parallelization cost param -> r*p < 2^30 (go implementation specific)
 	Saltlen uint32 // 128 bits min.
 	Keylen  uint32 // 128 bits min.
-	// unexported
-	Masked bool   // are parameters private
-	salt   []byte // my salt..
+	Masked  bool   // are parameters private
+	salt    []byte // my salt..
 }
 
 func newScryptParamsFromFields(fields []string) (*ScryptParams, error) {
