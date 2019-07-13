@@ -125,7 +125,9 @@ This is a work in progress and the default are still being worked out/verified (
 
 An example tool is provided in this repository:  
 
-**`go get -u git.sr.ht/~eau/passwd/cmd/pcrypt`**
+<strike>**`go get -u git.sr.ht/~eau/passwd/cmd/pcrypt`**</strike>
+
+Note: small issue with git.sr.ht that prevents for now to go get subpackages inside a module, i'm trying untangle the cause and provide a patch..
 
 hopefully this helps understanding how to use this package.
 
