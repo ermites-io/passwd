@@ -81,6 +81,7 @@ type ScryptParams struct {
 	Keylen  uint32 // 128 bits min.
 	Masked  bool   // are parameters private
 	salt    []byte // my salt..
+	secret  []byte // secret for key'ed hashes..
 }
 
 func newScryptParamsFromFields(fields []string) (*ScryptParams, error) {
