@@ -2,6 +2,7 @@ image: openbsd/6.5
 packages: 
     - go
     - gmake
+    - git
 environment:
     PATH: $PATH:~/go/bin
 sources:
