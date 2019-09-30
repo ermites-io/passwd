@@ -63,6 +63,9 @@ with your key derivation in order to attack it offline.
 
 **!!! IMPORTANT !!! This is NOT what makes your hash safe, it just makes it slightly harder to attack offline.**
 
+### Secret Key'ed Hash 
+
+
 
 ## Examples 
 ### Password Hashing (public parameters):
