@@ -3,7 +3,7 @@ packages:
     - go
     - make
 environment:
-    PATH: $PATH:~/go/bin
+    PATH: $PATH:$HOME/go/bin
 sources:
     - https://git.sr.ht/~eau/passwd
 tasks:

@@ -9,7 +9,7 @@ sources:
 tasks:
     - lint: |
         . ~/.buildenv
-        go get -u github.com/gojp/goreportcard/cmd/goreportcard-cli
+        /usr/local/bin/go get -u github.com/gojp/goreportcard/cmd/goreportcard-cli
         cd ~/go/src/github.com/gojp/goreportcard
         gmake install
         cd ~/passwd
