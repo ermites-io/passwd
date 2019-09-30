@@ -39,6 +39,9 @@ import (
 // SCRYPT_COMMON (details..)
 // SCRYPT_PARANOID
 //
+// if you need to understand password hashing this is a good introduction I had
+// to read to understand some basics..
+// https://www.win.tue.nl/applied_crypto/2016/20161215_pwd.pdf
 
 // HashProfile is the type that describes the exported profile type available in this
 // package
@@ -74,7 +77,13 @@ var (
 // Profile define the hashing profile you have select and is created using
 // New() / NewMasked() / NewCustom()
 type Profile struct {
-	t      HashProfile // type
+	t HashProfile // type
+	// XXX TODO: this can now become an interface with the following calls
+	// deriveFromPassword
+	// generateFromPassword
+	// compare
+	// setSalt
+	// setSecret
 	params interface{} // parameters
 }
 
@@ -84,6 +93,7 @@ func New(profile HashProfile) (*Profile, error) {
 
 	switch profile {
 	case Argon2idDefault, Argon2idParanoid, ScryptDefault, ScryptParanoid, BcryptDefault, BcryptParanoid:
+		// TODO: type switch on params then add secret to the profiles.
 		// all authorized
 		p = Profile{
 			t:      profile,
@@ -156,6 +166,21 @@ func NewCustom(params interface{}) (*Profile, error) {
 	return nil, ErrUnsupported
 }
 
+// NewSecret setup a secret associated with the profile currently in
+// use
+// following produced hashes, will use the new key'ed hashing algorithm
+func (p *Profile) NewSecret(secret []byte) error {
+	switch v := p.params.(type) {
+	case ScryptParams:
+		v.secret = secret
+		return nil
+	case Argon2Params:
+		v.secret = secret
+		return nil
+	}
+	return ErrUnsupported
+}
+
 // Derive is the Profile's method for computing a cryptographic key
 // usable with symmetric AEAD using the user provided Profile, password and salt
 // it will return the derived key.
@@ -188,6 +213,21 @@ func (p *Profile) Hash(password []byte) ([]byte, error) {
 	}
 	return nil, ErrUnsupported
 }
+
+/*
+func (p *Profile) HardHash(secret, password []byte) ([]byte, error) {
+	switch v := p.params.(type) {
+	case BcryptParams:
+		// XXX unsupported
+		//return v.generateFromPassword(password)
+	case ScryptParams:
+		return v.generateWithSecretAndPassword(secret, password)
+	case Argon2Params:
+		return v.generateWithSecretAndPassword(password)
+	}
+	return nil, ErrUnsupported
+}
+*/
 
 // as it's a Profile method, we expect the hashed version to be already loaded
 // with NewHash(hash)

@@ -4,12 +4,14 @@ package passwd
 
 import (
 	"bytes"
+	"crypto/hmac"
 	"crypto/rand"
 	"crypto/subtle"
 	"fmt"
 	"strconv"
 
 	"golang.org/x/crypto/scrypt"
+	"golang.org/x/crypto/sha3"
 )
 
 const (
@@ -153,6 +155,36 @@ func (p *ScryptParams) deriveFromPassword(password []byte) ([]byte, error) {
 func (p *ScryptParams) generateFromParams(password []byte) ([]byte, error) {
 	var hash bytes.Buffer
 	var params string
+	var data []byte
+
+	data = password
+
+	// we want to hmac a secret to have the resulting hash
+	if len(p.secret) > 0 {
+		// new formula.
+		// 1. hashed_first_pass = hmac_sha256(password, secret:salt)
+		hmac_first := hmac.New(sha3.New256, p.salt)
+		_, err := hmac_first.Write(password)
+		if err != nil {
+			return nil, err
+		}
+		hmac_first_result := hmac_first.Sum(nil)
+
+		// 2. hashed_full_pass = hmac_sha256(hashed_first_pass, secret)
+		hmac_full := hmac.New(sha3.New256, p.secret)
+		_, err = hmac_full.Write(hmac_first_result)
+		if err != nil {
+			return nil, err
+		}
+
+		// 3. p.generateFromParams(hashed_full_pass)
+		data = hmac_full.Sum(nil)
+	}
+
+	key, err := scrypt.Key(data, p.salt, int(p.N), int(p.R), int(p.P), int(p.Keylen))
+	if err != nil {
+		return nil, err
+	}
 
 	// need to b64.
 	//salt64 := base64.StdEncoding.EncodeToString(salt)
@@ -166,18 +198,12 @@ func (p *ScryptParams) generateFromParams(password []byte) ([]byte, error) {
 			separatorRune, p.P,
 			separatorRune, p.Keylen)
 	}
-	id := idScrypt
-
-	key, err := scrypt.Key(password, p.salt, int(p.N), int(p.R), int(p.P), int(p.Keylen))
-	if err != nil {
-		return nil, err
-	}
 
 	// encode the key
 	key64 := base64Encode(key)
 
 	passwordStr := fmt.Sprintf("%c%s%c%s%s%c%s",
-		separatorRune, id,
+		separatorRune, idScrypt,
 		separatorRune, salt64,
 		params,
 		separatorRune, key64)

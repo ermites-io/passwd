@@ -4,12 +4,14 @@ package passwd
 
 import (
 	"bytes"
+	"crypto/hmac"
 	"crypto/rand"
 	"crypto/subtle"
 	"fmt"
 	"strconv"
 
 	"golang.org/x/crypto/argon2"
+	"golang.org/x/crypto/sha3"
 )
 
 const (
@@ -207,10 +209,46 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 	var key []byte
 	var id, params string
 	var hash bytes.Buffer
+	var data []byte
 
 	err := p.validate(&argonMinParameters)
 	if err != nil {
 		return nil, err
+	}
+
+	data = password
+
+	// we want to hmac a secret to have the resulting hash
+	if len(p.secret) > 0 {
+		// new formula.
+		// 1. hashed_first_pass = hmac_sha256(password, secret:salt)
+		hmac_first := hmac.New(sha3.New256, p.salt)
+		_, err := hmac_first.Write(password)
+		if err != nil {
+			return nil, err
+		}
+		hmac_first_result := hmac_first.Sum(nil)
+
+		// 2. hashed_full_pass = hmac_sha256(hashed_first_pass, secret)
+		hmac_full := hmac.New(sha3.New256, p.secret)
+		_, err = hmac_full.Write(hmac_first_result)
+		if err != nil {
+			return nil, err
+		}
+
+		// 3. p.generateFromParams(hashed_full_pass)
+		data = hmac_full.Sum(nil)
+	}
+
+	switch p.Version {
+	case Argon2i:
+		id = idArgon2i
+		key = argon2.Key(data, p.salt, p.Time, p.Memory, p.Thread, p.Keylen)
+	case Argon2id:
+		fallthrough
+	default:
+		id = idArgon2id
+		key = argon2.IDKey(data, p.salt, p.Time, p.Memory, p.Thread, p.Keylen)
 	}
 
 	// need to b64.
@@ -224,17 +262,6 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 			separatorRune, p.Memory,
 			separatorRune, p.Thread,
 			separatorRune, p.Keylen)
-	}
-
-	switch p.Version {
-	case Argon2i:
-		id = idArgon2i
-		key = argon2.Key(password, p.salt, p.Time, p.Memory, p.Thread, p.Keylen)
-	case Argon2id:
-		fallthrough
-	default:
-		id = idArgon2id
-		key = argon2.IDKey(password, p.salt, p.Time, p.Memory, p.Thread, p.Keylen)
 	}
 
 	// encode the key
