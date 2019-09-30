@@ -20,6 +20,7 @@ func main() {
 	bcryptFlag := flag.Bool("bcrypt", false, "use bcrypt derivation")
 	checkFlag := flag.String("check", "", "hash to compare")
 	maskedFlag := flag.Bool("mask", false, "generate masked hash")
+	secretFlag := flag.String("secret", "", "use -secret <secret> as hash secret")
 
 	flag.Parse()
 	argv := flag.Args()
@@ -56,6 +57,11 @@ func main() {
 				if *maskedFlag {
 					ph, err = passwd.NewMasked(profile)
 				}
+
+				if len(*secretFlag) > 0 {
+					ph.SetSecret(*secretFlag)
+				}
+
 				if err != nil {
 					panic(err)
 				}
