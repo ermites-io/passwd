@@ -133,6 +133,14 @@ An example tool is provided in this repository:
 Note: small issue with git.sr.ht that prevents for now to go get subpackages inside a module, i'm trying untangle the cause and provide a patch..
 
 hopefully this helps understanding how to use this package.
+## In master
+* v0.2.0-dev: (NOT TAGGED THIS IS JUST MASTER).
+	* added key'd hash ability based on facebook key'd hmac salt/hash using 
+	  SetSecret() on the profile before any operation. (done)
+	* fixed the build (done)
+	* added some tests for key'd hashes (done)
+	* minor code rearrangement (done)
+	* can be used concurrently lock-free (in progress)
 
 ## Changelog
 

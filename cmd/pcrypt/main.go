@@ -59,7 +59,7 @@ func main() {
 				}
 
 				if len(*secretFlag) > 0 {
-					ph.SetSecret(*secretFlag)
+					ph.SetSecret([]byte(*secretFlag))
 				}
 
 				if err != nil {

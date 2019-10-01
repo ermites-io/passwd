@@ -177,7 +177,6 @@ func (p *ScryptParams) generateFromParams(password []byte) ([]byte, error) {
 			return nil, err
 		}
 
-		// 3. p.generateFromParams(hashed_full_pass)
 		data = hmac_full.Sum(nil)
 	}
 
