@@ -11,8 +11,8 @@ tasks:
     - lint: |
         . ~/.buildenv
         /usr/local/bin/go get -u github.com/gojp/goreportcard/cmd/goreportcard-cli
-        cd ~/go/src/github.com/gojp/goreportcard
-        gmake install
+        #cd ~/go/src/github.com/gojp/goreportcard
+        #        gmake install
         cd ~/passwd
         ~/go/bin/goreportcard-cli -t 80.0
     - test: |
