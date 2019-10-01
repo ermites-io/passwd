@@ -4,7 +4,7 @@ packages:
     - make
     - git
 environment:
-    PATH: $PATH:$HOME/go/bin
+    PATH: $PATH:$HOME/go/bin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 sources:
     - https://git.sr.ht/~eau/passwd
 tasks:
