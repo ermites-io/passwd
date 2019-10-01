@@ -4,7 +4,7 @@ packages:
     - gmake
     - git
 environment:
-    PATH: ~/go/bin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+    PATH: /bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/go/bin
 sources:
     - https://git.sr.ht/~eau/passwd
 tasks:
