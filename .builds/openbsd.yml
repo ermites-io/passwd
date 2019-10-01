@@ -4,15 +4,15 @@ packages:
     - gmake
     - git
 environment:
-    PATH: $PATH:$HOME/go/bin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+    PATH: ~/go/bin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 sources:
     - https://git.sr.ht/~eau/passwd
 tasks:
     - lint: |
         . ~/.buildenv
         /usr/local/bin/go get -u github.com/gojp/goreportcard/cmd/goreportcard-cli
-        #cd ~/go/src/github.com/gojp/goreportcard
-        #        gmake install
+        cd ~/go/src/github.com/gojp/goreportcard
+        gmake install
         cd ~/passwd
         ~/go/bin/goreportcard-cli -t 80.0
     - test: |
