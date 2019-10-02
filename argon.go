@@ -179,7 +179,7 @@ func (p *Argon2Params) compare(hashed, password []byte) error {
 		return ErrMismatch
 	}
 
-	//fmt.Printf("COMPARE %s vs %s\n", hashed, compared)
+	//fmt.Printf("COMPARE (%d)%s vs (%d)%s\n", len(hashed), hashed, len(compared), compared)
 	if subtle.ConstantTimeCompare(compared, hashed[:hashlen]) == 1 {
 		return nil
 	}
@@ -220,6 +220,7 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 
 	// we want to hmac a secret to have the resulting hash
 	if len(p.secret) > 0 {
+		//fmt.Printf("secret enabled\n")
 		// new formula.
 		// 1. hashed_first_pass = hmac_sha256(password, secret:salt)
 		hmac_first := hmac.New(sha3.New256, p.salt)

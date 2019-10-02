@@ -1,4 +1,4 @@
-// +build go1.11
+// +build go1.12
 
 // Package passwd provides simple primitives for hashing and verifying
 // password.
@@ -95,11 +95,30 @@ func New(profile HashProfile) (*Profile, error) {
 	case Argon2idDefault, Argon2idParanoid, ScryptDefault, ScryptParanoid, BcryptDefault, BcryptParanoid:
 		// TODO: type switch on params then add secret to the profiles.
 		// all authorized
-		p = Profile{
-			t:      profile,
-			params: params[profile],
+		pparams := params[profile]
+		//fmt.Printf("PPAM %d TYPE : %T\n", profile, pparams)
+
+		switch v := pparams.(type) {
+		case Argon2Params:
+			p = Profile{
+				t:      profile,
+				params: (*Argon2Params)(&v),
+			}
+			return &p, nil
+		case BcryptParams:
+			p = Profile{
+				t:      profile,
+				params: (*BcryptParams)(&v),
+			}
+			return &p, nil
+		case ScryptParams:
+			p = Profile{
+				t:      profile,
+				params: (*ScryptParams)(&v),
+			}
+			//fmt.Printf("V: %T STRUCT PARAM: %T\n", v, p.params)
+			return &p, nil
 		}
-		return &p, nil
 	}
 
 	return nil, ErrUnsupported
@@ -122,13 +141,13 @@ func NewMasked(profile HashProfile) (*Profile, error) {
 			v.Masked = true
 			p = Profile{
 				t:      profile,
-				params: v,
+				params: &v,
 			}
 		case Argon2Params:
 			v.Masked = true
 			p = Profile{
 				t:      profile,
-				params: v,
+				params: &v,
 			}
 		}
 	default:
@@ -143,19 +162,19 @@ func NewCustom(params interface{}) (*Profile, error) {
 	var p Profile
 
 	switch v := params.(type) {
-	case BcryptParams:
+	case *BcryptParams:
 		p = Profile{
 			t:      BcryptCustom,
 			params: v,
 		}
 		return &p, nil
-	case ScryptParams:
+	case *ScryptParams:
 		p = Profile{
 			t:      ScryptCustom,
 			params: v,
 		}
 		return &p, nil
-	case Argon2Params:
+	case *Argon2Params:
 		p = Profile{
 			t:      Argon2Custom,
 			params: v,
@@ -171,10 +190,10 @@ func NewCustom(params interface{}) (*Profile, error) {
 // following produced hashes, will use the new key'ed hashing algorithm
 func (p *Profile) SetSecret(secret []byte) error {
 	switch v := p.params.(type) {
-	case ScryptParams:
+	case *ScryptParams:
 		v.secret = secret
 		return nil
-	case Argon2Params:
+	case *Argon2Params:
 		v.secret = secret
 		return nil
 	}
@@ -187,10 +206,10 @@ func (p *Profile) SetSecret(secret []byte) error {
 func (p *Profile) Derive(password, salt []byte) ([]byte, error) {
 	switch v := p.params.(type) {
 	// Bcrypt is NOT supported to derive crypto keys
-	case ScryptParams:
+	case *ScryptParams:
 		v.salt = salt
 		return v.deriveFromPassword(password)
-	case Argon2Params:
+	case *Argon2Params:
 		v.salt = salt
 		return v.deriveFromPassword(password)
 	}
@@ -203,31 +222,19 @@ func (p *Profile) Derive(password, salt []byte) ([]byte, error) {
 // it takes the plaintext password to hash and output its hashed value
 // ready for storage
 func (p *Profile) Hash(password []byte) ([]byte, error) {
+	//fmt.Printf("TYPE: %d PARAMS: %T\n", p.t, p.params)
 	switch v := p.params.(type) {
-	case BcryptParams:
+	case *BcryptParams:
+		//fmt.Printf("BCRYPT TYPE: %d PARAMS: %T\n", p.t, v)
 		return v.generateFromPassword(password)
-	case ScryptParams:
+	case *ScryptParams:
 		return v.generateFromPassword(password)
-	case Argon2Params:
+	case *Argon2Params:
+		//fmt.Printf("v.Masked: %v\n", v.Masked)
 		return v.generateFromPassword(password)
 	}
 	return nil, ErrUnsupported
 }
-
-/*
-func (p *Profile) HardHash(secret, password []byte) ([]byte, error) {
-	switch v := p.params.(type) {
-	case BcryptParams:
-		// XXX unsupported
-		//return v.generateFromPassword(password)
-	case ScryptParams:
-		return v.generateWithSecretAndPassword(secret, password)
-	case Argon2Params:
-		return v.generateWithSecretAndPassword(password)
-	}
-	return nil, ErrUnsupported
-}
-*/
 
 // as it's a Profile method, we expect the hashed version to be already loaded
 // with NewHash(hash)
@@ -244,12 +251,12 @@ func (p *Profile) Compare(hashed, password []byte) error {
 	}
 
 	switch v := p.params.(type) {
-	case BcryptParams:
+	case *BcryptParams:
 		return v.compare(hashed, password)
-	case ScryptParams:
+	case *ScryptParams:
 		v.salt = salt
 		return v.compare(hashed, password)
-	case Argon2Params:
+	case *Argon2Params:
 		v.salt = salt
 		return v.compare(hashed, password)
 	}
@@ -257,7 +264,7 @@ func (p *Profile) Compare(hashed, password []byte) error {
 	return ErrMismatch
 }
 
-// Compare verify a non masked hash values against a plaintext password.
+// Compare verify a non-key'd & non-mask'd hash values against a plaintext password.
 func Compare(hashed, password []byte) error {
 	//var version, stuff string
 	//var num int
@@ -276,13 +283,14 @@ func Compare(hashed, password []byte) error {
 		return ErrMismatch
 	}
 
-	//fmt.Printf("PARAM TYPE: %T\n", params)
+	//fmt.Printf("PARAM TYPE: %T vs %T\n", params, &Argon2Params{})
 	switch v := params.(type) {
-	case BcryptParams:
+	case *BcryptParams:
 		return v.compare(hashed, password)
-	case ScryptParams:
+	case *ScryptParams:
 		return v.compare(hashed, password)
-	case Argon2Params:
+	case *Argon2Params:
+		//fmt.Printf("it's argon2!\n")
 		return v.compare(hashed, password)
 	}
 

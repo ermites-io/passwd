@@ -54,12 +54,21 @@ func main() {
 		default:
 			for idx, passwordStr := range argv {
 				ph, err := passwd.New(profile)
+				if err != nil {
+					panic(err)
+				}
 				if *maskedFlag {
 					ph, err = passwd.NewMasked(profile)
+					if err != nil {
+						panic(err)
+					}
 				}
 
 				if len(*secretFlag) > 0 {
-					ph.SetSecret([]byte(*secretFlag))
+					err = ph.SetSecret([]byte(*secretFlag))
+					if err != nil {
+						panic(err)
+					}
 				}
 
 				if err != nil {

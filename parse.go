@@ -34,7 +34,7 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 			return nil, err
 		}
 
-		return *bp, nil
+		return bp, nil
 	case idScrypt:
 		//fmt.Printf("scrypt compare!\n")
 		sp, err := newScryptParamsFromFields(fields[1:]) // mismatch.
@@ -42,7 +42,7 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 			// XXX wrapp the error
 			return nil, err
 		}
-		return *sp, nil
+		return sp, nil
 	case idArgon2i:
 		fallthrough
 	case idArgon2id:
@@ -51,7 +51,7 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 			// XXX wrapp the error
 			return nil, err
 		}
-		return *ap, nil
+		return ap, nil
 	}
 	return nil, ErrParse
 }

@@ -2,7 +2,9 @@
 
 package passwd
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"golang.org/x/crypto/bcrypt"
+)
 
 var (
 	bcryptCommonParameters   = BcryptParams{Cost: bcrypt.DefaultCost}

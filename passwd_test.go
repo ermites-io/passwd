@@ -81,7 +81,7 @@ var vectorNewCustomTest = []struct {
 	expectedHash      error
 	expectedCompare   error
 }{
-	{Argon2Params{ // Argon2idDefault aka MATCHING CONDITIONS
+	{&Argon2Params{ // Argon2idDefault aka MATCHING CONDITIONS
 		Version: Argon2id,
 		Time:    1,
 		Memory:  64 * 1024,
@@ -90,7 +90,7 @@ var vectorNewCustomTest = []struct {
 		Keylen:  32,
 		Masked:  true,
 	}, Argon2idDefault, "testpassword", nil, nil, nil},
-	{Argon2Params{ // NON MATCHING
+	{&Argon2Params{ // NON MATCHING
 		Version: Argon2id,
 		Time:    1,
 		Memory:  64 * 1024,
@@ -99,7 +99,7 @@ var vectorNewCustomTest = []struct {
 		Keylen:  32,
 		Masked:  true,
 	}, Argon2idDefault, "testpassword", nil, nil, ErrMismatch},
-	{Argon2Params{ // NON MATCHING
+	{&Argon2Params{ // NON MATCHING
 		Version: Argon2id,
 		Time:    1,
 		Memory:  64 * 1024,
@@ -108,7 +108,7 @@ var vectorNewCustomTest = []struct {
 		Keylen:  16, // non matching param
 		Masked:  true,
 	}, Argon2idDefault, "testpassword", nil, nil, ErrMismatch},
-	{Argon2Params{ // NON MATCHING
+	{&Argon2Params{ // NON MATCHING
 		Version: Argon2id,
 		Time:    1,
 		Memory:  64 * 1024,
@@ -117,7 +117,7 @@ var vectorNewCustomTest = []struct {
 		Keylen:  32,
 		Masked:  true,
 	}, Argon2idDefault, "testpassword", nil, nil, ErrMismatch},
-	{Argon2Params{ // NON MATCHING
+	{&Argon2Params{ // NON MATCHING
 		Version: Argon2id,
 		Time:    1,
 		Memory:  32 * 1024, // non matching param
@@ -126,7 +126,7 @@ var vectorNewCustomTest = []struct {
 		Keylen:  32,
 		Masked:  true,
 	}, Argon2idDefault, "testpassword", nil, nil, ErrMismatch},
-	{ScryptParams{ // ScryptDefault aka MATCHING CONDITION
+	{&ScryptParams{ // ScryptDefault aka MATCHING CONDITION
 		N:       1 << 16,
 		R:       8,
 		P:       1,
@@ -134,7 +134,7 @@ var vectorNewCustomTest = []struct {
 		Keylen:  32,
 		Masked:  true,
 	}, ScryptDefault, "testpassword", nil, nil, nil},
-	{ScryptParams{ // NON MATCHING
+	{&ScryptParams{ // NON MATCHING
 		N:       1 << 16,
 		R:       8,
 		P:       1,
@@ -142,7 +142,7 @@ var vectorNewCustomTest = []struct {
 		Keylen:  32,
 		Masked:  true,
 	}, ScryptDefault, "testpassword", nil, nil, ErrMismatch},
-	{ScryptParams{ // NON MATCHING
+	{&ScryptParams{ // NON MATCHING
 		N:       1 << 16,
 		R:       8,
 		P:       1,
@@ -150,7 +150,7 @@ var vectorNewCustomTest = []struct {
 		Keylen:  16, // non matching param
 		Masked:  true,
 	}, ScryptDefault, "testpassword", nil, nil, ErrMismatch},
-	{ScryptParams{ // NON MATCHING
+	{&ScryptParams{ // NON MATCHING
 		N:       1 << 16,
 		R:       4, // non matching param
 		P:       1,
@@ -158,7 +158,7 @@ var vectorNewCustomTest = []struct {
 		Keylen:  32,
 		Masked:  true,
 	}, ScryptDefault, "testpassword", nil, nil, ErrMismatch},
-	{ScryptParams{ // NON MATCHING
+	{&ScryptParams{ // NON MATCHING
 		N:       1 << 14, // non matching param
 		R:       8,
 		P:       1,
@@ -176,10 +176,10 @@ var vectorNewCustomTestBcrypt = []struct {
 	expectedHash      error
 	expectedCompare   error
 }{
-	{BcryptParams{ // MATCHING CONDITION
+	{&BcryptParams{ // MATCHING CONDITION
 		Cost: bcrypt.DefaultCost,
 	}, BcryptDefault, "testpassword", nil, nil, nil},
-	{BcryptParams{ // Non matching
+	{&BcryptParams{ // Non matching
 		Cost: bcrypt.MinCost,
 	}, BcryptDefault, "testpassword", nil, nil, ErrMismatch},
 }
@@ -253,12 +253,14 @@ func TestNewCustomBcrypt(t *testing.T) {
 		if err != nil {
 			t.Fatalf("test #%d: profile: %d err: %v vs expected: %v\n", i, test.profileEqual, err, test.expectedNewCustom)
 		}
+		//fmt.Printf("PROFILE ORIG: %v %T\n", myprofileOrig.t, myprofileOrig.params)
 
 		hashCustom, err := myprofileCustom.Hash([]byte(test.passwordToHash))
 		if err != test.expectedHash {
 			t.Fatalf("test #%d (hash): profile: %v err: %v vs expected: %v\n", i, test.params, err, test.expectedHash)
 		}
 
+		//fmt.Printf("PROFILE ORIG: %v %T\n", myprofileOrig.t, myprofileOrig.params)
 		hashOrig, err := myprofileOrig.Hash([]byte(test.passwordToHash))
 		if err != test.expectedHash {
 			t.Fatalf("test #%d (hash): profile: %d err: %v vs expected: %v\n", i, test.profileEqual, err, test.expectedHash)
@@ -285,17 +287,20 @@ func TestHashCompare(t *testing.T) {
 		}
 		hash, err := myprofile.Hash([]byte(test.passwordHash))
 		if err != test.expectedHash {
-			t.Fatalf("test #%d (hash): profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.expectedHash)
+			t.Fatalf("test #%d (hash): profile: %d err: %v vs expected: %v\n", i, test.profile, err, test.expectedHash)
 		}
+
+		///var prout bool
+		//fmt.Printf("prout: %v HASH: %s\n", prout, hash)
 
 		err = Compare(hash, []byte(test.passwordCompare))
 		if err != test.expectedCompare {
-			t.Fatalf("test #%d (Compare): profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.expectedCompare)
+			t.Fatalf("test #%d (Compare): profile: %d err: %v vs expected: %v\n", i, test.profile, err, test.expectedCompare)
 		}
 
 		err = myprofile.Compare(hash, []byte(test.passwordCompare))
 		if err != test.expectedCompare {
-			t.Fatalf("test #%d (passwd.Compare): profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.expectedCompare)
+			t.Fatalf("test #%d (passwd.Compare): profile: %d err: %v vs expected: %v\n", i, test.profile, err, test.expectedCompare)
 		}
 	}
 }
@@ -343,7 +348,7 @@ func ExampleNewCustom() {
 		Keylen:  32,
 		Masked:  true,
 	}
-	p, err := NewCustom(customParams)
+	p, err := NewCustom(&customParams)
 	if err != nil {
 		panic(err)
 	}
