@@ -205,6 +205,11 @@ func (p *Argon2Params) deriveFromPassword(password []byte) (key []byte, err erro
 	return key, nil
 }
 
+/*
+func hmacKeyHash(secret, salt, password []byte) ([]byte, error) {
+}
+*/
+
 func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 	var key []byte
 	var id, params string
