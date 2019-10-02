@@ -1,4 +1,4 @@
-// +build go1.11
+// +build go1.12
 
 package passwd
 
@@ -289,9 +289,6 @@ func TestHashCompare(t *testing.T) {
 		if err != test.expectedHash {
 			t.Fatalf("test #%d (hash): profile: %d err: %v vs expected: %v\n", i, test.profile, err, test.expectedHash)
 		}
-
-		///var prout bool
-		//fmt.Printf("prout: %v HASH: %s\n", prout, hash)
 
 		err = Compare(hash, []byte(test.passwordCompare))
 		if err != test.expectedCompare {
