@@ -90,6 +90,10 @@ const (
 	Argon2Custom // value for custom
 	ScryptCustom // value for custom
 	BcryptCustom // value for custom
+
+	Argon int = iota
+	Scrypt
+	Bcrypt
 )
 
 var (
