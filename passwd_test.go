@@ -142,7 +142,7 @@ var vectorNewCustomTest = []struct {
 		Keylen:  32,
 		Masked:  true,
 	}, ScryptDefault, "testpassword", nil, nil, ErrMismatch},
-	{&ScryptParams{ // NON MATCHING
+	{&ScryptParams{ // NON MATCHING #7
 		N:       1 << 16,
 		R:       8,
 		P:       1,
@@ -235,6 +235,7 @@ func TestNewCustom(t *testing.T) {
 			t.Fatalf("test #%d (passwd.Compare): profile: %v err: %v vs expected: %v\n", i, test.params, err, test.expectedCompare)
 		}
 
+		//fmt.Printf("profile.params: %v defaut profile params: %v\n", myprofileCustom.params.Masked, scryptCommonParameters.Masked)
 		err = myprofileCustom.Compare(hashOrig, []byte(test.passwordToHash))
 		if err != test.expectedCompare {
 			t.Fatalf("test #%d (passwd.Compare): profile: %d err: %v vs expected: %v\n", i, test.profileEqual, err, test.expectedCompare)

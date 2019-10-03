@@ -172,10 +172,10 @@ func (p *Argon2Params) compare(hashed, password []byte) error {
 	// password encrypted would still match, as such you could have
 	// potentially generated thousands of small salted password
 	// to bruteforce and ran against the comparison function to
-	// find a collision which requires less power salts HAVE to
+	// find a collision which requires less power, salts HAVE to
 	// be the same size that's it.
 	hashlen := uint32(len(compared))
-	if uint32(len(hashed)) < hashlen || len(p.salt) != int(p.Saltlen) {
+	if uint32(len(hashed)) != hashlen || len(p.salt) != int(p.Saltlen) {
 		return ErrMismatch
 	}
 
