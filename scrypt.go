@@ -150,17 +150,6 @@ func (p *ScryptParams) validate(min *ScryptParams) error {
 	return nil
 }
 
-/*
-func (p *ScryptParams) getSalt() error {
-	p.salt = make([]byte, p.Saltlen)
-	n, err := rand.Read(p.salt)
-	if err != nil || n != int(p.Saltlen) {
-		return err
-	}
-	return nil
-}
-*/
-
 func (p *ScryptParams) deriveFromPassword(password []byte) ([]byte, error) {
 	key, err := scrypt.Key(password, p.salt, int(p.N), int(p.R), int(p.P), int(p.Keylen))
 	if err != nil {

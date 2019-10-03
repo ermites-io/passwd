@@ -175,26 +175,11 @@ func (p *Argon2Params) deriveFromPassword(password []byte) (key []byte, err erro
 	return key, nil
 }
 
-/*
-func (p *Argon2Params) getSalt() error {
-	p.salt = make([]byte, p.Saltlen)
-	n, err := rand.Read(p.salt)
-	if err != nil || n != int(p.Saltlen) {
-		return ErrHash
-	}
-	return nil
-}
-*/
-
 func (p *Argon2Params) generateFromParams(salt, password []byte) (out []byte, err error) {
 	var key []byte
 	var id, params string
 	var hash bytes.Buffer
 	var data []byte
-
-	// this should NOT happen here..
-	// because it is used by
-	// compare too
 
 	data = password
 

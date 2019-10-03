@@ -241,7 +241,7 @@ func TestNewCustom(t *testing.T) {
 		//    passwd_test.go:240: test #7 (passwd.Compare): profile: 2 err: <nil> vs expected: mismatch
 		//
 		// never been able to reproduce or find.. cosmic rays.
-		// what is extremly strange is it happened on the CI/CD ONCE exactly too.
+		// what is extremely strange is it happened on the CI/CD ONCE exactly too.
 		// so i suspect a nasty bug but I suspect something related to getSalt()
 		// i had a not so clean construction where the salt could not read enough bytes
 		// BUT would not return an error like n, err := rand.Read( a_len_byte_array )
