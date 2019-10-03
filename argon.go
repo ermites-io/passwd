@@ -4,14 +4,11 @@ package passwd
 
 import (
 	"bytes"
-	"crypto/hmac"
-	"crypto/rand"
 	"crypto/subtle"
 	"fmt"
 	"strconv"
 
 	"golang.org/x/crypto/argon2"
-	"golang.org/x/crypto/sha3"
 )
 
 const (
@@ -100,6 +97,7 @@ type Argon2Params struct {
 }
 
 // [0] password: 'prout' hashed: '$2id$aiOE.rPFUFkkehxc6utWY.$1$65536$8$32$Wv1IMP6xwaqVaQGOX6Oxe.eSEbozeRJLzln8ZlthZfS'
+// TODO must return salt!
 func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 	if len(fields) != 6 {
 		return nil, ErrParse
@@ -145,7 +143,7 @@ func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 		Thread:  thread,
 		Saltlen: saltlen,
 		Keylen:  keylen,
-		salt:    salt,
+		//salt:    salt,
 	}
 
 	return &ap, nil
@@ -157,34 +155,6 @@ func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 func (p *Argon2Params) validate(min *Argon2Params) error {
 	// XXX TODO
 	return nil
-}
-
-func (p *Argon2Params) compare(hashed, password []byte) error {
-	compared, err := p.generateFromParams(password)
-	if err != nil {
-		return ErrMismatch
-	}
-
-	// yes in case things are padded by mistake depending on storage
-	// whatever.. the params tells us what to verify.
-	//
-	// we had a subtle bug where a shorter salt with the same
-	// password encrypted would still match, as such you could have
-	// potentially generated thousands of small salted password
-	// to bruteforce and ran against the comparison function to
-	// find a collision which requires less power, salts HAVE to
-	// be the same size that's it.
-	hashlen := uint32(len(compared))
-	if uint32(len(hashed)) != hashlen || len(p.salt) != int(p.Saltlen) {
-		return ErrMismatch
-	}
-
-	//fmt.Printf("COMPARE (%d)%s vs (%d)%s\n", len(hashed), hashed, len(compared), compared)
-	if subtle.ConstantTimeCompare(compared, hashed[:hashlen]) == 1 {
-		return nil
-	}
-
-	return ErrMismatch
 }
 
 func (p *Argon2Params) deriveFromPassword(password []byte) (key []byte, err error) {
@@ -206,59 +176,50 @@ func (p *Argon2Params) deriveFromPassword(password []byte) (key []byte, err erro
 }
 
 /*
-func hmacKeyHash(secret, salt, password []byte) ([]byte, error) {
+func (p *Argon2Params) getSalt() error {
+	p.salt = make([]byte, p.Saltlen)
+	n, err := rand.Read(p.salt)
+	if err != nil || n != int(p.Saltlen) {
+		return ErrHash
+	}
+	return nil
 }
 */
 
-func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
+func (p *Argon2Params) generateFromParams(salt, password []byte) (out []byte, err error) {
 	var key []byte
 	var id, params string
 	var hash bytes.Buffer
 	var data []byte
 
-	err := p.validate(&argonMinParameters)
-	if err != nil {
-		return nil, err
-	}
+	// this should NOT happen here..
+	// because it is used by
+	// compare too
 
 	data = password
 
 	// we want to hmac a secret to have the resulting hash
 	if len(p.secret) > 0 {
-		//fmt.Printf("secret enabled\n")
-		// new formula.
-		// 1. hashed_first_pass = hmac_sha256(password, secret:salt)
-		hmac_first := hmac.New(sha3.New256, p.salt)
-		_, err := hmac_first.Write(password)
+		data, err = hmacKeyHash(p.secret, salt, password)
 		if err != nil {
 			return nil, err
 		}
-		hmac_first_result := hmac_first.Sum(nil)
-
-		// 2. hashed_full_pass = hmac_sha256(hashed_first_pass, secret)
-		hmac_full := hmac.New(sha3.New256, p.secret)
-		_, err = hmac_full.Write(hmac_first_result)
-		if err != nil {
-			return nil, err
-		}
-
-		data = hmac_full.Sum(nil)
 	}
 
 	switch p.Version {
 	case Argon2i:
 		id = idArgon2i
-		key = argon2.Key(data, p.salt, p.Time, p.Memory, p.Thread, p.Keylen)
+		key = argon2.Key(data, salt, p.Time, p.Memory, p.Thread, p.Keylen)
 	case Argon2id:
 		fallthrough
 	default:
 		id = idArgon2id
-		key = argon2.IDKey(data, p.salt, p.Time, p.Memory, p.Thread, p.Keylen)
+		key = argon2.IDKey(data, salt, p.Time, p.Memory, p.Thread, p.Keylen)
 	}
 
 	// need to b64.
 	//salt64 := base64.StdEncoding.EncodeToString(salt)
-	salt64 := base64Encode(p.salt)
+	salt64 := base64Encode(salt)
 
 	// params
 	if !p.Masked {
@@ -286,24 +247,52 @@ func (p *Argon2Params) generateFromParams(password []byte) ([]byte, error) {
 	// ID:
 	// $2D == ARGON2D
 	// $2ID == Argon2id
-	return hash.Bytes(), nil
-}
-
-func (p *Argon2Params) getSalt() error {
-	p.salt = make([]byte, p.Saltlen)
-	n, err := rand.Read(p.salt)
-	if err != nil || n != int(p.Saltlen) {
-		return ErrHash
-	}
-	return nil
+	//return hash.Bytes(), nil
+	out = hash.Bytes()
+	return out, nil
 }
 
 func (p *Argon2Params) generateFromPassword(password []byte) ([]byte, error) {
 
-	err := p.getSalt()
+	salt, err := getSalt(p.Saltlen)
 	if err != nil {
 		return nil, err
 	}
 
-	return p.generateFromParams(password)
+	return p.generateFromParams(salt, password)
+}
+
+func (p *Argon2Params) compare(hashed, password []byte) error {
+	salt, err := parseFromHashToSalt(hashed)
+	if err != nil {
+		fmt.Printf("compare parse error: %v\n", err)
+		return ErrMismatch
+	}
+
+	compared, err := p.generateFromParams(salt, password)
+	if err != nil {
+		return ErrMismatch
+	}
+
+	// yes in case things are padded by mistake depending on storage
+	// whatever.. the params tells us what to verify.
+	//
+	// we had a subtle bug where a shorter salt with the same
+	// password encrypted would still match, as such you could have
+	// potentially generated thousands of small salted password
+	// to bruteforce and ran against the comparison function to
+	// find a collision which requires less power, salts HAVE to
+	// be the same size that's it.
+	hashlen := uint32(len(compared))
+	if uint32(len(hashed)) != hashlen || len(salt) != int(p.Saltlen) {
+		return ErrMismatch
+	}
+
+	//fmt.Printf("COMPARE (%d)%s vs (%d)%s\n", len(hashed), hashed, len(compared), compared)
+	//if subtle.ConstantTimeCompare(compared, hashed[:hashlen]) == 1 {
+	if subtle.ConstantTimeCompare(compared, hashed) == 1 {
+		return nil
+	}
+
+	return ErrMismatch
 }

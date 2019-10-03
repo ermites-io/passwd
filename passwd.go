@@ -222,9 +222,8 @@ func NewCustom(params interface{}) (*Profile, error) {
 	return nil, ErrUnsupported
 }
 
-// NewSecret setup a secret associated with the profile currently in
-// use
-// following produced hashes, will use the new key'ed hashing algorithm
+// SetSecret setup a secret associated with the profile currently in
+// use following produced hashes, will use the new key'ed hashing algorithm
 func (p *Profile) SetSecret(secret []byte) error {
 	switch v := p.params.(type) {
 	case *ScryptParams:
@@ -265,8 +264,18 @@ func (p *Profile) Hash(password []byte) ([]byte, error) {
 		//fmt.Printf("BCRYPT TYPE: %d PARAMS: %T\n", p.t, v)
 		return v.generateFromPassword(password)
 	case *ScryptParams:
+		// TODO minimum params validation
+		err := v.validate(&scryptMinParameters)
+		if err != nil {
+			return nil, err
+		}
 		return v.generateFromPassword(password)
 	case *Argon2Params:
+		// TODO minimum params validation
+		err := v.validate(&argonMinParameters)
+		if err != nil {
+			return nil, err
+		}
 		//fmt.Printf("v.Masked: %v\n", v.Masked)
 		return v.generateFromPassword(password)
 	}
@@ -280,21 +289,25 @@ func (p *Profile) Hash(password []byte) ([]byte, error) {
 // for the associated profile.
 // This function is mainly here to allow to work with "masked" hashes
 // where we don't provide the Hash parameters in the hashed values.
+//
+// fixed / another code path might come if (for example):
+// - profile is BcryptSomething
+// - compared hash is $2id$salt$...
 func (p *Profile) Compare(hashed, password []byte) error {
-	salt, err := parseFromHashToSalt(hashed)
-	if err != nil {
-		fmt.Printf("compare parse error: %v\n", err)
-		return ErrMismatch
-	}
+	/*
+		id, salt, err := parseFromHashToSalt(hashed)
+		if err != nil {
+			fmt.Printf("compare parse error: %v\n", err)
+			return ErrMismatch
+		}
+	*/
 
 	switch v := p.params.(type) {
 	case *BcryptParams:
 		return v.compare(hashed, password)
 	case *ScryptParams:
-		v.salt = salt
 		return v.compare(hashed, password)
 	case *Argon2Params:
-		v.salt = salt
 		return v.compare(hashed, password)
 	}
 
@@ -327,7 +340,6 @@ func Compare(hashed, password []byte) error {
 	case *ScryptParams:
 		return v.compare(hashed, password)
 	case *Argon2Params:
-		//fmt.Printf("it's argon2!\n")
 		return v.compare(hashed, password)
 	}
 

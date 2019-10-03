@@ -23,7 +23,7 @@ func token(c rune) bool {
 
 func parseFromHashToParams(hashed []byte) (interface{}, error) {
 	fields := strings.FieldsFunc(string(hashed), token)
-	if len(fields) < 2 {
+	if len(fields) < 3 {
 		return nil, ErrParse
 	}
 
@@ -36,7 +36,6 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 
 		return bp, nil
 	case idScrypt:
-		//fmt.Printf("scrypt compare!\n")
 		sp, err := newScryptParamsFromFields(fields[1:]) // mismatch.
 		if err != nil {
 			// XXX wrapp the error
@@ -57,8 +56,10 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 }
 
 func parseFromHashToSalt(hashed []byte) ([]byte, error) {
+	//var nilstr string
+
 	fields := strings.FieldsFunc(string(hashed), token)
-	if len(fields) < 2 {
+	if len(fields) < 3 {
 		return nil, ErrParse
 	}
 	switch fields[0] {

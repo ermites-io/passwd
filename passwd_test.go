@@ -236,6 +236,20 @@ func TestNewCustom(t *testing.T) {
 		}
 
 		//fmt.Printf("profile.params: %v defaut profile params: %v\n", myprofileCustom.params.Masked, scryptCommonParameters.Masked)
+		// we observed a glitch here.. the #7
+		//--- FAIL: TestNewCustom (2.75s)
+		//    passwd_test.go:240: test #7 (passwd.Compare): profile: 2 err: <nil> vs expected: mismatch
+		//
+		// never been able to reproduce or find.. cosmic rays.
+		// what is extremly strange is it happened on the CI/CD ONCE exactly too.
+		// so i suspect a nasty bug but I suspect something related to getSalt()
+		// i had a not so clean construction where the salt could not read enough bytes
+		// BUT would not return an error like n, err := rand.Read( a_len_byte_array )
+		// err == nil but n != len
+		// could go unnoticed and generate something incorrect.. the test happens in the
+		// same context.
+		// other possibility would be that the profiles are not properly initialized and are referencing the same memory area
+		// because i fucked up somewhere i could not find
 		err = myprofileCustom.Compare(hashOrig, []byte(test.passwordToHash))
 		if err != test.expectedCompare {
 			t.Fatalf("test #%d (passwd.Compare): profile: %d err: %v vs expected: %v\n", i, test.profileEqual, err, test.expectedCompare)

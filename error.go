@@ -13,6 +13,7 @@ type Error string
 func (e Error) Error() string { return string(e) }
 
 const (
+	errSalt = Error("salt error")
 	// ErrParse when a parse error happened
 	ErrParse = Error("parse error")
 	// ErrHash when a hashing error occurs

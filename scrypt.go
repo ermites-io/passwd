@@ -4,14 +4,11 @@ package passwd
 
 import (
 	"bytes"
-	"crypto/hmac"
-	"crypto/rand"
 	"crypto/subtle"
 	"fmt"
 	"strconv"
 
 	"golang.org/x/crypto/scrypt"
-	"golang.org/x/crypto/sha3"
 )
 
 const (
@@ -53,6 +50,16 @@ var (
 		https://blog.filippo.io/the-scrypt-parameters
 
 	*/
+	scryptMinParameters = ScryptParams{
+		N:       1 << 16,
+		R:       8,
+		P:       1,
+		Saltlen: 16,
+		Keylen:  32,
+		// salt
+		//Masked: false,
+	}
+
 	scryptCommonParameters = ScryptParams{
 		N:       1 << 16,
 		R:       8,
@@ -86,6 +93,7 @@ type ScryptParams struct {
 	secret  []byte // secret for key'ed hashes..
 }
 
+// TODO must return salt
 func newScryptParamsFromFields(fields []string) (*ScryptParams, error) {
 	if len(fields) != 6 {
 		return nil, ErrParse
@@ -128,12 +136,21 @@ func newScryptParamsFromFields(fields []string) (*ScryptParams, error) {
 		P:       p,
 		Saltlen: saltlen,
 		Keylen:  keylen,
-		salt:    salt,
+		//salt:    salt,
 	}
 
 	return &sp, nil
 }
 
+// function that validate custom parameters and minimal security is ok.
+// will upgrade over the years
+// XXX TODO
+func (p *ScryptParams) validate(min *ScryptParams) error {
+	// XXX TODO
+	return nil
+}
+
+/*
 func (p *ScryptParams) getSalt() error {
 	p.salt = make([]byte, p.Saltlen)
 	n, err := rand.Read(p.salt)
@@ -142,6 +159,7 @@ func (p *ScryptParams) getSalt() error {
 	}
 	return nil
 }
+*/
 
 func (p *ScryptParams) deriveFromPassword(password []byte) ([]byte, error) {
 	key, err := scrypt.Key(password, p.salt, int(p.N), int(p.R), int(p.P), int(p.Keylen))
@@ -151,8 +169,8 @@ func (p *ScryptParams) deriveFromPassword(password []byte) ([]byte, error) {
 	return key, nil
 }
 
-//func (p *ScryptParams) generateFromPassword(password []byte) ([]byte, error) {
-func (p *ScryptParams) generateFromParams(password []byte) ([]byte, error) {
+//func (p *ScryptParams) generateFromParams(password []byte) (out []byte, err error) {
+func (p *ScryptParams) generateFromParams(salt, password []byte) (out []byte, err error) {
 	var hash bytes.Buffer
 	var params string
 	var data []byte
@@ -161,33 +179,20 @@ func (p *ScryptParams) generateFromParams(password []byte) ([]byte, error) {
 
 	// we want to hmac a secret to have the resulting hash
 	if len(p.secret) > 0 {
-		// new formula.
-		// 1. hashed_first_pass = hmac_sha256(password, secret:salt)
-		hmac_first := hmac.New(sha3.New256, p.salt)
-		_, err := hmac_first.Write(password)
+		data, err = hmacKeyHash(p.secret, salt, password)
 		if err != nil {
 			return nil, err
 		}
-		hmac_first_result := hmac_first.Sum(nil)
-
-		// 2. hashed_full_pass = hmac_sha256(hashed_first_pass, secret)
-		hmac_full := hmac.New(sha3.New256, p.secret)
-		_, err = hmac_full.Write(hmac_first_result)
-		if err != nil {
-			return nil, err
-		}
-
-		data = hmac_full.Sum(nil)
 	}
 
-	key, err := scrypt.Key(data, p.salt, int(p.N), int(p.R), int(p.P), int(p.Keylen))
+	key, err := scrypt.Key(data, salt, int(p.N), int(p.R), int(p.P), int(p.Keylen))
 	if err != nil {
 		return nil, err
 	}
 
 	// need to b64.
 	//salt64 := base64.StdEncoding.EncodeToString(salt)
-	salt64 := base64Encode(p.salt)
+	salt64 := base64Encode(salt)
 
 	// params
 	if !p.Masked {
@@ -206,25 +211,35 @@ func (p *ScryptParams) generateFromParams(password []byte) ([]byte, error) {
 		separatorRune, salt64,
 		params,
 		separatorRune, key64)
+
 	_, err = hash.WriteString(passwordStr)
 	if err != nil {
 		return nil, err
 	}
 
-	return hash.Bytes(), nil
+	out = hash.Bytes()
+	//return hash.Bytes(), nil
+	return out, nil
 }
 
 func (p *ScryptParams) generateFromPassword(password []byte) ([]byte, error) {
-	err := p.getSalt()
+	salt, err := getSalt(p.Saltlen)
 	if err != nil {
 		return nil, err
 	}
 
-	return p.generateFromParams(password)
+	return p.generateFromParams(salt, password)
 }
 
 func (p *ScryptParams) compare(hashed, password []byte) error {
-	compared, err := p.generateFromParams(password)
+	salt, err := parseFromHashToSalt(hashed)
+	if err != nil {
+		fmt.Printf("compare parse error: %v\n", err)
+		return ErrMismatch
+	}
+
+	// generate the string to compare
+	compared, err := p.generateFromParams(salt, password)
 	if err != nil {
 		return ErrMismatch
 	}
@@ -237,11 +252,16 @@ func (p *ScryptParams) compare(hashed, password []byte) error {
 	// find a collision which requires less power salts HAVE to
 	// be the same size that's it.
 	hashlen := uint32(len(compared))
-	if uint32(len(hashed)) != hashlen || len(p.salt) != int(p.Saltlen) {
+	if uint32(len(hashed)) != hashlen || len(salt) != int(p.Saltlen) {
 		return ErrMismatch
 	}
 
-	if subtle.ConstantTimeCompare(compared, hashed[:hashlen]) == 1 {
+	// the hashed[:hashlen] is to avoid padded data invalid compare while the hash is actually good
+	// think like a wrongly defined database column type (i.e. char(255)) will return the string padded with spaces
+	// we end up removing those case, but we bound what we check above by making sure length are identical.
+	//
+	//if subtle.ConstantTimeCompare(compared, hashed[:hashlen]) == 1 {
+	if subtle.ConstantTimeCompare(compared, hashed) == 1 {
 		return nil
 	}
 
