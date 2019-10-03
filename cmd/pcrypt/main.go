@@ -37,11 +37,13 @@ func main() {
 		os.Exit(0)
 	}
 
+	// create a passwd profile handler
 	ph, err := passwd.New(profile)
 	if err != nil {
 		panic(err)
 	}
 
+	// shall we mask parameters?
 	if *maskedFlag {
 		ph, err = passwd.NewMasked(profile)
 		if err != nil {
@@ -49,6 +51,7 @@ func main() {
 		}
 	}
 
+	// shall we key the hashing algorithm?
 	if len(*secretFlag) > 0 {
 		err = ph.SetSecret([]byte(*secretFlag))
 		if err != nil {
@@ -83,27 +86,6 @@ func main() {
 			fmt.Printf("[%d] password: '%s' hashed: '%s'\n", idx, passwordStr, h)
 		}
 	}
-	//}
-
-	// MASKED PARAMETERS
-	/*
-		p := passwd.NewMasked(profile)
-		fmt.Printf("argv[%d]: %q\n", len(argv), argv)
-		if len(argv) > 0 {
-			for idx, passwordStr := range argv {
-				h, err := p.Hash([]byte(passwordStr))
-				if err != nil {
-					log.Fatalf("hashing error: %v\n", err)
-				}
-				fmt.Printf("[%d] password: '%s' hashed: '%s'\n", idx, passwordStr, h)
-				if len(*checkFlag) > 0 {
-					fmt.Printf("[%d] is '%s' the passwd? %v\n",
-						idx, passwordStr,
-						p.Compare([]byte(*checkFlag), []byte(passwordStr)))
-				}
-			}
-		}
-	*/
 
 	os.Exit(0)
 }
