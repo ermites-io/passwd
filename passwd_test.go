@@ -29,6 +29,89 @@ var vectorNewTests = []struct {
 	{BcryptCustom, ErrUnsupported},
 }
 
+var vectorCompatibility = []struct {
+	profile HashProfile
+	masked  bool
+	hash    []byte
+	passwd  []byte
+	secret  []byte
+	want    error
+}{
+	{ // all good
+		Argon2idDefault,
+		false,
+		[]byte("$2id$jHPEXqOJ7PEXodl75xJd.e$1$65536$16$32$xR87mnbB548T4Sj4uSQ0mAjNtIG2D2uG.Aob28QJY2u"), // prout
+		[]byte("prout"),
+		nil,
+		nil,
+	},
+	{ // invalid password
+		Argon2idDefault,
+		false,
+		[]byte("$2id$jHPEXqOJ7PEXodl75xJd.e$1$65536$16$32$xR87mnbB548T4Sj4uSQ0mAjNtIG2D2uG.Aob28QJY2u"), // prout
+		[]byte("pprout"),
+		nil,
+		ErrMismatch,
+	},
+
+	{ // masked and valid
+		Argon2idDefault,
+		true,
+		[]byte("$2id$Ubnnyt80onlzG/5MlokXmu$xvpXX5.3eZBjihHNFEVjLTtURakelLxlkrjBrzv9KA6"), // prout
+		[]byte("prout"),
+		nil,
+		nil,
+	},
+	{ // masked compare with non masked
+		Argon2idDefault,
+		false, // invalid
+		[]byte("$2id$Ubnnyt80onlzG/5MlokXmu$xvpXX5.3eZBjihHNFEVjLTtURakelLxlkrjBrzv9KA6"), // prout
+		[]byte("prout"),
+		nil,
+		ErrMismatch,
+	},
+	{ // masked, non-key'd, trying to compare with key'd
+		Argon2idDefault,
+		true,
+		[]byte("$2id$Ubnnyt80onlzG/5MlokXmu$xvpXX5.3eZBjihHNFEVjLTtURakelLxlkrjBrzv9KA6"), // prout
+		[]byte("prout"),
+		[]byte("secret"), // invalid
+		ErrMismatch,
+	},
+	{ // masked, key'd and valid
+		Argon2idDefault,
+		true,
+		[]byte("$2id$yapnlBLmLVowNBPO.LJhGu$QsWAGb1pNhM2BotmZrKSfuEFGe1bWDtKF9Qz29rCEBq"), // prout
+		[]byte("prout"),
+		[]byte("secret"),
+		nil,
+	},
+	{ // masked, key'd and valid
+		Argon2idDefault,
+		true,
+		[]byte("$2id$yapnlBLmLVowNBPO.LJhGu$QsWAGb1pNhM2BotmZrKSfuEFGe1bWDtKF9Qz29rCEBq"), // prout
+		[]byte("prout"),
+		[]byte("ssecret"), // invalid
+		ErrMismatch,
+	},
+	{ // masked, key'd and valid
+		Argon2idDefault,
+		true,
+		[]byte("$2id$yapnlBLmLVowNBPO.LJhGu$QsWAGb1pNhM2BotmZrKSfuEFGe1bWDtKF9Qz29rCEBq"), // prout
+		[]byte("pprout"), // invalid
+		[]byte("secret"),
+		ErrMismatch,
+	},
+	{ // masked, key'd and valid
+		Argon2idDefault,
+		false, // invalid
+		[]byte("$2id$yapnlBLmLVowNBPO.LJhGu$QsWAGb1pNhM2BotmZrKSfuEFGe1bWDtKF9Qz29rCEBq"), // prout
+		[]byte("prout"),
+		[]byte("secret"),
+		ErrMismatch,
+	},
+}
+
 var vectorNewMaskedTests = []struct {
 	profile  HashProfile
 	expected error
@@ -194,6 +277,26 @@ func TestNew(t *testing.T) {
 		myprofile, err := New(test.profile)
 		if err != test.expected {
 			t.Fatalf("test #%d: profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.expected)
+		}
+	}
+}
+
+func TestCompat(t *testing.T) {
+	for i, test := range vectorCompatibility {
+		myprofile, err := New(test.profile)
+		if test.masked {
+			myprofile, err = NewMasked(test.profile)
+		}
+
+		if len(test.secret) > 0 {
+			myprofile.SetSecret(test.secret)
+		}
+		if err != nil {
+			t.Fatalf("test #%d: profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.want)
+		}
+		err = myprofile.Compare(test.hash, test.passwd)
+		if err != test.want {
+			t.Fatalf("test #%d: profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.want)
 		}
 	}
 }
