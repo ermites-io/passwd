@@ -134,7 +134,7 @@ check a hash against a password:
 	}
 	
 	// set the hashing key.
-	err = p.SetSecret([]byte("myhashingsecret")
+	err = p.SetKey([]byte("myhashingsecret")
 	if err != nil {
 		// handle error
 	}
@@ -178,7 +178,7 @@ Changelog
 
 * v0.2.0: (MASTER BRANCH / NOT RELEASED/TAGGED THIS IS JUST MASTER).
 	* added key'd hash ability (using sha3-256/384 instead sha1/sha256) based on facebook key'd hmac salt/hash using 
-	  SetSecret() on the profile before any operation.
+	  SetKey() on the profile before any operation.
 	  more [understanding](https://bristolcrypto.blogspot.com/2015/01/password-hashing-according-to-facebook.html)
 	* fixed the build.
 	* added some tests for key'd hashes.
