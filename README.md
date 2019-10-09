@@ -84,7 +84,7 @@ key'd hashes try to guarantee that leaked password cannot be attacked offline.
 
 We used the method described [here](https://bristolcrypto.blogspot.com/2015/01/password-hashing-according-to-facebook.html).
 
-This requires you to **`<profile>.SetSecret()`** before call the **`Hash()`** or **`Compare()`** function.     
+This requires you to **`<profile>.SetKey()`** before call the **`Hash()`** or **`Compare()`** function.     
 
 
 

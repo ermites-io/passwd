@@ -289,7 +289,7 @@ func TestCompat(t *testing.T) {
 		}
 
 		if len(test.secret) > 0 {
-			myprofile.SetSecret(test.secret)
+			myprofile.SetKey(test.secret)
 		}
 		if err != nil {
 			t.Fatalf("test #%d: profile: %d err: %v vs expected: %v\n", i, myprofile, err, test.want)

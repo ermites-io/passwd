@@ -226,9 +226,9 @@ func NewCustom(params interface{}) (*Profile, error) {
 	return nil, ErrUnsupported
 }
 
-// SetSecret setup a secret associated with the profile currently in
+// SetKey setup a secret associated with the profile currently in
 // use following produced hashes, will use the new key'ed hashing algorithm
-func (p *Profile) SetSecret(secret []byte) error {
+func (p *Profile) SetKey(secret []byte) error {
 	switch v := p.params.(type) {
 	case *ScryptParams:
 		v.secret = secret
