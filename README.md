@@ -3,12 +3,12 @@
 [![builds.sr.ht status](https://builds.sr.ht/~eau/passwd.svg)](https://builds.sr.ht/~eau/passwd?)
 
 passwd
-========
+======
 
 A simple golang password hashing package.
 
 Description
------------
+===========
 
 New "password hashing" algorithms (PHC) have emerged in order to counter the increase in hardware assets
 available to crack passwords easily when they are stolen.
@@ -36,9 +36,9 @@ You can also decide to use your own *Argon2* or *Scrypt* custom parameters with 
 
 
 How to Use the package
-----------------------
+======================
 
-# About Hashing Profiles
+### **About Hashing Profiles**
 It is an attempt to dimension crypto parameters to common use cases (interactive/web auth/blabla) vs file storage
 
 - Default  : ~interactive.
@@ -48,7 +48,7 @@ Custom profiles allow a user to define its own hashing parameters if those defau
       
 
 
-## Public vs Masked parameters
+### **Public vs Masked parameters**
 
 Commonly password hashing includes hashing parameters in order to provide interoperability.
 
@@ -56,7 +56,7 @@ if no interoperability is needed (outside your authentication needs) and to make
 attacker, you might "mask" your parameters (instead of embedding them in the resulting hash).
       
 
-## Public parameters (common practice)
+### **Public parameters (common practice)**
 
 Public parameters will embbed the derivation parameters in the resulting hash.
 This allows you to simply use the **`passwd.Compare()`** function against a hash without
@@ -64,7 +64,7 @@ the need of a profile object.
 
 
 
-## Masked parameters
+### **Masked parameters**
 
 Masked parameters will remove the derivation parameters from the resulting hash.
 This requires you to **`passwd.NewMasked()`** before calling the profile **`Compare()`**
@@ -76,7 +76,7 @@ with your key derivation in order to attack it offline.
 **!!! IMPORTANT !!! This is NOT what makes your hash safe, it just makes it slightly harder to attack offline.**     
 
 
-## Key'ed Hash 
+### **Key'ed Hash**
 
 
 Key'd hashes makes it impossible to bruteforce (unless collision in hashes of course or the secret leaks), 
@@ -147,7 +147,7 @@ done.
 
 
 Status
-------
+======
 
 This package exclusively uses crypto algorithm implementations shipped in go extended crypto packages (located in `x/crypto/`)
 
@@ -162,7 +162,8 @@ Note: small issue with git.sr.ht that prevents for now to go get subpackages ins
 hopefully this helps understanding how to use this package.      
 
 
-# Changelog
+Changelog
+=========
 
 * v0.2.0: (MASTER BRANCH / NOT RELEASED/TAGGED THIS IS JUST MASTER).
 	* added key'd hash ability (using sha3-256/384 instead sha1/sha256) based on facebook key'd hmac salt/hash using 
@@ -186,7 +187,8 @@ hopefully this helps understanding how to use this package.
 * v0.1.0: initial release
 
 
-# Important Notes
+Important Notes
+===============
 
 bcrypt is just a wrapper to `x/crypto/bcrypt`, only scrypt and argon support masked parameters.
 
@@ -195,7 +197,8 @@ using a modern profile to store new passwords.
 
 
 
-# Featuring (because there is always a star in your production..)
+Featuring (because there is always a star in your production..)
+===============================================================
 
 * [Argon2](https://en.wikipedia.org/wiki/Argon2) for today key stretching.
 * [Scrypt](http://en.wikipedia.org/wiki/Scrypt) for key stretching.
