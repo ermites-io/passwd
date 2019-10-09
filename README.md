@@ -30,7 +30,9 @@ To keep things simple and to avoid a user to shoot himself in the foot, paramete
 - Default
 - Paranoid
 
-You can also decide to use your own *Argon2* or *Scrypt* custom parameters with this package.    
+You can also decide to use your own *Argon2* or *Scrypt* custom parameters with this package.
+    
+
 
 
 How to Use the package
@@ -42,8 +44,8 @@ It is an attempt to dimension crypto parameters to common use cases (interactive
 - Default  : ~interactive.
 - Paranoid : file storage.
 
-Custom profiles allow a user to define its own hashing parameters if those default don't fit.     
-
+Custom profiles allow a user to define its own hashing parameters if those default don't fit. 
+      
 
 
 ## Public vs Masked parameters
@@ -51,7 +53,9 @@ Custom profiles allow a user to define its own hashing parameters if those defau
 Commonly password hashing includes hashing parameters in order to provide interoperability.
 
 if no interoperability is needed (outside your authentication needs) and to make things slightly more annoying for a regular 
-attacker, you might "mask" your parameters (instead of embedding them in the resulting hash).    
+attacker, you might "mask" your parameters (instead of embedding them in the resulting hash).
+      
+
 
 
 
