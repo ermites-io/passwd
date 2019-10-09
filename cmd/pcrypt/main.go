@@ -53,7 +53,7 @@ func main() {
 
 	// shall we key the hashing algorithm?
 	if len(*secretFlag) > 0 {
-		err = ph.SetSecret([]byte(*secretFlag))
+		err = ph.SetKey([]byte(*secretFlag))
 		if err != nil {
 			panic(err)
 		}
