@@ -63,7 +63,16 @@ with your key derivation in order to attack it offline.
 
 **!!! IMPORTANT !!! This is NOT what makes your hash safe, it just makes it slightly harder to attack offline.**
 
-### Secret Key'ed Hash 
+### Key'ed Hash 
+
+
+Key'd hashes makes it impossible to bruteforce (unless collision in hashes of course or the secret leaks), 
+key'd hashes try to guarantee that leaked password cannot be attacked offline.
+
+We used the method described [here](https://bristolcrypto.blogspot.com/2015/01/password-hashing-according-to-facebook.html).
+
+This requires you to **`<profile>.SetSecret()`** before call the **`Hash()`** or **`Compare()`** function.
+
 
 
 
@@ -145,7 +154,7 @@ hopefully this helps understanding how to use this package.
 	* minor code rearrangement.
 	* can be used concurrently lock-free.
 	* bugfixes and code cleaning.
-	* write key'd hash tests & concurrency tests. (TODO)
+	* write key'd hash tests & concurrency tests. (ON GOING)
 
 * v0.1.3: 
 	* fix a salted+masked+custom profile comparison issue.
@@ -174,6 +183,11 @@ using a modern profile to store new passwords.
 
 
 # Resources
+
+[password hashing intro](https://www.win.tue.nl/applied_crypto/2016/20161215_pwd.pdf)
+[key'd hashes](https://bristolcrypto.blogspot.com/2015/01/password-hashing-according-to-facebook.html)
+
+# Project resources
 
 [Send patches](https://git-send-email.io) and questions to
 [~eau/passwd@lists.sr.ht](https://lists.sr.ht/~eau/passwd).
