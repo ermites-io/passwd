@@ -103,46 +103,58 @@ create a password hashing object with *Argon2* default profile:
 	}
 	// hashed value: $2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6
 
-done.
 
-
-## Password Compare (public parameters / bcrypt) :
+## Password Compare (non-masked parameters / non-key'ed / bcrypt) :
 
 check a hash against a password:   
 
-**`err := passwd.Compare(hashed, []byte("password"))`**  
-
-done, `err` will be nil if the password matches the hash.     
-
-
-
+	err := passwd.Compare(hashed, []byte("password"))
+	if err != nil {
+		// handle error
+	}
 
 
 ## Password Hashing (**masked parameters**):
 
-create a password hashing profile:   
+	p, err := passwd.NewMasked(passwd.Argon2idDefault)
+	if err != nil {
+		// handle error
+	}
+	
+	hashed, err := p.Hash( []byte("my1337p4ssw0rd!") )
+	if err != nil {
+		// handle error
+	}
+	// hashed value: $2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK
 
-**`p, err := passwd.NewMasked(passwd.Argon2idDefault)`**     
+## Password Hashing (**key'ed hashing** + **masked parameters**)
+	p, err := passwd.NewMasked(passwd.Argon2idDefault)
+	if err != nil {
+		// handle error
+	}
+	
+	// set the hashing key.
+	err = p.SetSecret([]byte("myhashingsecret")
+	if err != nil {
+		// handle error
+	}
+	
+	hashed, err := p.Hash( []byte("my1337p4ssw0rd!") )
+	if err != nil {
+		// handle error
+	}
+	// hashed value: $2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK
+
+## Password Compare :
+
+check a hash against a password, use the profile you defined to compare:  
+
+	err := p.Compare(hashed, []byte("password"))
+	if err != nil {
+		// handle error
+	}
 
 
-
-Hash your password:   
-
-**`hashed, err := p.Hash( []byte("my1337p4ssw0rd!") )`**
-
-done, that's it, now **`hashed`** contain the hashed password and parameters are
-masked. 
-
-**`$2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK`**    
-
-
-## Password Compare (**masked parameters**) :
-
-check a hash against a password:  
-
-**`err := p.Compare(hashed, []byte("password"))`**
-
-done.     
 
 
 Status
