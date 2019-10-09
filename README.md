@@ -2,10 +2,13 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![builds.sr.ht status](https://builds.sr.ht/~eau/passwd.svg)](https://builds.sr.ht/~eau/passwd?)
 
-# passwd
+passwd
+========
+
 A simple golang password hashing package
 
-# Description
+Description
+-----------
 
 New "password hashing" algorithms (PHC) have emerged in order to counter the increase in hardware assets
 available to crack passwords easily when they are stolen.
@@ -29,7 +32,8 @@ To keep things simple and to avoid a user to shoot himself in the foot, paramete
 
 You can also decide to use your own *Argon2* or *Scrypt* custom parameters with this package.
 
-# How to Use the package
+How to Use the package
+----------------------
 
 ## About Hashing Profiles
 It is an attempt to dimension crypto parameters to common use cases (interactive/web auth/blabla) vs file storage
@@ -94,6 +98,8 @@ done, that's it, now **`hashed`** contain the hashed password:
 **`$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6`**
 
 
+
+
 ### Password Compare (public parameters / bcrypt) :
 
 check a hash against a password:   
@@ -102,8 +108,8 @@ check a hash against a password:
 
 done, `err` will be nil if the password matches the hash.
 
----
----
+
+
 
 ### Password Hashing (**masked parameters**):
 
@@ -129,7 +135,8 @@ check a hash against a password:
 
 done.
 
-# Status
+Status
+------
 
 This package exclusively uses crypto algorithm implementations shipped in go extended crypto packages (located in `x/crypto/`)
 
@@ -182,12 +189,14 @@ using a modern profile to store new passwords.
 * [Go](http://golang.org) because it works.
 
 
-# Resources
+Resources
+---------
 
-[password hashing intro](https://www.win.tue.nl/applied_crypto/2016/20161215_pwd.pdf)
-[key'd hashes](https://bristolcrypto.blogspot.com/2015/01/password-hashing-according-to-facebook.html)
+* [password hashing intro](https://www.win.tue.nl/applied_crypto/2016/20161215_pwd.pdf)
+* [key'd hashes](https://bristolcrypto.blogspot.com/2015/01/password-hashing-according-to-facebook.html)
 
-# Project resources
+Project resources
+-----------------
 
 [Send patches](https://git-send-email.io) and questions to
 [~eau/passwd@lists.sr.ht](https://lists.sr.ht/~eau/passwd).
