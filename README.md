@@ -93,18 +93,17 @@ This requires you to **`<profile>.SetSecret()`** before call the **`Hash()`** or
 
 create a password hashing object with *Argon2* default profile:   
 
-**`p, err := passwd.New(passwd.Argon2idDefault)`**
+	p, err := passwd.New(passwd.Argon2idDefault)
+	if err != nil {
+		// handle error
+	}
+	hashed, err := p.Hash( []byte("my1337p4ssw0rd!") )
+	if err != nil {
+		// handle error
+	}
+	// hashed value: $2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6
 
-
-Hash your password:   
-
-**`hashed, err := p.Hash( []byte("my1337p4ssw0rd!") )`**
-
-
-done, that's it, now **`hashed`** contain the hashed password:   
-
-**`$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6`**     
-
+done.
 
 
 ## Password Compare (public parameters / bcrypt) :
