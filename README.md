@@ -5,7 +5,7 @@
 passwd
 ========
 
-A simple golang password hashing package
+A simple golang password hashing package.
 
 Description
 -----------
@@ -30,7 +30,8 @@ To keep things simple and to avoid a user to shoot himself in the foot, paramete
 - Default
 - Paranoid
 
-You can also decide to use your own *Argon2* or *Scrypt* custom parameters with this package.
+You can also decide to use your own *Argon2* or *Scrypt* custom parameters with this package.    
+
 
 How to Use the package
 ----------------------
@@ -41,7 +42,8 @@ It is an attempt to dimension crypto parameters to common use cases (interactive
 - Default  : ~interactive.
 - Paranoid : file storage.
 
-Custom profiles allow a user to define its own hashing parameters if those default don't fit.  
+Custom profiles allow a user to define its own hashing parameters if those default don't fit.     
+
 
 
 ## Public vs Masked parameters
@@ -49,14 +51,16 @@ Custom profiles allow a user to define its own hashing parameters if those defau
 Commonly password hashing includes hashing parameters in order to provide interoperability.
 
 if no interoperability is needed (outside your authentication needs) and to make things slightly more annoying for a regular 
-attacker, you might "mask" your parameters (instead of embedding them in the resulting hash).  
+attacker, you might "mask" your parameters (instead of embedding them in the resulting hash).    
+
 
 
 ### Public parameters (common practice)
 
 Public parameters will embbed the derivation parameters in the resulting hash.
 This allows you to simply use the **`passwd.Compare()`** function against a hash without
-the need of a profile object.  
+the need of a profile object.      
+
 
 
 ### Masked parameters
@@ -68,7 +72,7 @@ method.
 An attacker would have to not only grab the stored password, but also to guess the parameters you use
 with your key derivation in order to attack it offline.
 
-**!!! IMPORTANT !!! This is NOT what makes your hash safe, it just makes it slightly harder to attack offline.**  
+**!!! IMPORTANT !!! This is NOT what makes your hash safe, it just makes it slightly harder to attack offline.**     
 
 
 ### Key'ed Hash 
@@ -79,7 +83,7 @@ key'd hashes try to guarantee that leaked password cannot be attacked offline.
 
 We used the method described [here](https://bristolcrypto.blogspot.com/2015/01/password-hashing-according-to-facebook.html).
 
-This requires you to **`<profile>.SetSecret()`** before call the **`Hash()`** or **`Compare()`** function.  
+This requires you to **`<profile>.SetSecret()`** before call the **`Hash()`** or **`Compare()`** function.     
 
 
 
@@ -98,7 +102,7 @@ Hash your password:
 
 done, that's it, now **`hashed`** contain the hashed password:   
 
-**`$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6`**  
+**`$2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6`**     
 
 
 
@@ -108,7 +112,7 @@ check a hash against a password:
 
 **`err := passwd.Compare(hashed, []byte("password"))`**  
 
-done, `err` will be nil if the password matches the hash.  
+done, `err` will be nil if the password matches the hash.     
 
 
 
@@ -118,18 +122,18 @@ done, `err` will be nil if the password matches the hash.
 
 create a password hashing profile:   
 
-**`p, err := passwd.NewMasked(passwd.Argon2idDefault)`**  
+**`p, err := passwd.NewMasked(passwd.Argon2idDefault)`**     
 
 
 
 Hash your password:   
 
-**`hashed, err := p.Hash( []byte("my1337p4ssw0rd!") )`**  
+**`hashed, err := p.Hash( []byte("my1337p4ssw0rd!") )`**
 
 done, that's it, now **`hashed`** contain the hashed password and parameters are
-masked.  
+masked. 
 
-**`$2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK`**  
+**`$2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK`**    
 
 
 ### Password Compare (**masked parameters**) :
@@ -138,7 +142,7 @@ check a hash against a password:
 
 **`err := p.Compare(hashed, []byte("password"))`**
 
-done.  
+done.     
 
 
 Status
@@ -154,7 +158,8 @@ An example tool is provided in this repository:
 
 Note: small issue with git.sr.ht that prevents for now to go get subpackages inside a module, i'm trying untangle the cause and provide a patch..
 
-hopefully this helps understanding how to use this package.
+hopefully this helps understanding how to use this package.      
+
 
 ## Changelog
 
@@ -185,7 +190,8 @@ hopefully this helps understanding how to use this package.
 bcrypt is just a wrapper to `x/crypto/bcrypt`, only scrypt and argon support masked parameters.
 
 bcrypt is implemented for migration purposes, **`passwd.Compare()`** will works perfectly with `x/crypto/bcrypt` hashed passwords while 
-using a modern profile to store new passwords.
+using a modern profile to store new passwords.      
+
 
 
 ## Featuring (because there is always a star in your production..)
