@@ -38,7 +38,7 @@ You can also decide to use your own *Argon2* or *Scrypt* custom parameters with 
 How to Use the package
 ----------------------
 
-## About Hashing Profiles
+# About Hashing Profiles
 It is an attempt to dimension crypto parameters to common use cases (interactive/web auth/blabla) vs file storage
 
 - Default  : ~interactive.
@@ -56,10 +56,7 @@ if no interoperability is needed (outside your authentication needs) and to make
 attacker, you might "mask" your parameters (instead of embedding them in the resulting hash).
       
 
-
-
-
-### Public parameters (common practice)
+## Public parameters (common practice)
 
 Public parameters will embbed the derivation parameters in the resulting hash.
 This allows you to simply use the **`passwd.Compare()`** function against a hash without
@@ -67,7 +64,7 @@ the need of a profile object.
 
 
 
-### Masked parameters
+## Masked parameters
 
 Masked parameters will remove the derivation parameters from the resulting hash.
 This requires you to **`passwd.NewMasked()`** before calling the profile **`Compare()`**
@@ -79,7 +76,7 @@ with your key derivation in order to attack it offline.
 **!!! IMPORTANT !!! This is NOT what makes your hash safe, it just makes it slightly harder to attack offline.**     
 
 
-### Key'ed Hash 
+## Key'ed Hash 
 
 
 Key'd hashes makes it impossible to bruteforce (unless collision in hashes of course or the secret leaks), 
@@ -91,8 +88,8 @@ This requires you to **`<profile>.SetSecret()`** before call the **`Hash()`** or
 
 
 
-## Examples 
-### Password Hashing (public parameters):
+# Examples 
+## Password Hashing (public parameters):
 
 create a password hashing object with *Argon2* default profile:   
 
@@ -110,7 +107,7 @@ done, that's it, now **`hashed`** contain the hashed password:
 
 
 
-### Password Compare (public parameters / bcrypt) :
+## Password Compare (public parameters / bcrypt) :
 
 check a hash against a password:   
 
@@ -122,7 +119,7 @@ done, `err` will be nil if the password matches the hash.
 
 
 
-### Password Hashing (**masked parameters**):
+## Password Hashing (**masked parameters**):
 
 create a password hashing profile:   
 
@@ -140,7 +137,7 @@ masked.
 **`$2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK`**    
 
 
-### Password Compare (**masked parameters**) :
+## Password Compare (**masked parameters**) :
 
 check a hash against a password:  
 
@@ -165,7 +162,7 @@ Note: small issue with git.sr.ht that prevents for now to go get subpackages ins
 hopefully this helps understanding how to use this package.      
 
 
-## Changelog
+# Changelog
 
 * v0.2.0: (MASTER BRANCH / NOT RELEASED/TAGGED THIS IS JUST MASTER).
 	* added key'd hash ability (using sha3-256/384 instead sha1/sha256) based on facebook key'd hmac salt/hash using 
@@ -189,7 +186,7 @@ hopefully this helps understanding how to use this package.
 * v0.1.0: initial release
 
 
-## Important Notes
+# Important Notes
 
 bcrypt is just a wrapper to `x/crypto/bcrypt`, only scrypt and argon support masked parameters.
 
@@ -198,7 +195,7 @@ using a modern profile to store new passwords.
 
 
 
-## Featuring (because there is always a star in your production..)
+# Featuring (because there is always a star in your production..)
 
 * [Argon2](https://en.wikipedia.org/wiki/Argon2) for today key stretching.
 * [Scrypt](http://en.wikipedia.org/wiki/Scrypt) for key stretching.
