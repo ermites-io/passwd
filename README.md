@@ -166,7 +166,7 @@ This is a work in progress and the default are still being worked out/verified (
 
 An example tool is provided in this repository:  
 
-<strike>**`go get -u git.sr.ht/~eau/passwd/cmd/pcrypt`**</strike>
+	* [git.sr.ht/~eau/passwd/cmd/pcrypt](git.sr.ht/~eau/passwd/cmd/pcrypt)
 
 Note: small issue with git.sr.ht that prevents for now to go get subpackages inside a module, i'm trying untangle the cause and provide a patch..
 
