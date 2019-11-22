@@ -92,7 +92,7 @@ This requires you to **`<profile>.SetKey()`** before call the **`Hash()`** or **
 ## Password Hashing (public parameters):
 
 create a password hashing object with *Argon2* default profile:   
-
+```go
 	p, err := passwd.New(passwd.Argon2idDefault)
 	if err != nil {
 		// handle error
@@ -102,16 +102,17 @@ create a password hashing object with *Argon2* default profile:
 		// handle error
 	}
 	// hashed value: $2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6
-
+```
 
 ## Password Compare (non-masked parameters / non-key'ed / bcrypt) :
 
 check a hash against a password:   
-
+```go
 	err := passwd.Compare(hashed, []byte("password"))
 	if err != nil {
 		// handle error
 	}
+```
 
 
 ## Password Hashing (**masked parameters**):
@@ -224,14 +225,3 @@ Resources
 
 * [password hashing intro](https://www.win.tue.nl/applied_crypto/2016/20161215_pwd.pdf)
 * [key'd hashes](https://bristolcrypto.blogspot.com/2015/01/password-hashing-according-to-facebook.html)
-
-Project resources
------------------
-
-[Send patches](https://git-send-email.io) and questions to
-[~eau/passwd@lists.sr.ht](https://lists.sr.ht/~eau/passwd).
-
-Subscribe to release announcements on
-[~eau/passwd-announce](https://lists.sr.ht/~eau/passwd-announce)
-
-Bugs & todo here: [~eau/passwd](https://todo.sr.ht/~eau/passwd)
