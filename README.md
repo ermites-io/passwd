@@ -1,10 +1,12 @@
 [![Documentation](https://godoc.org/github.com/ermites-io/passwd?status.svg)](http://godoc.org/github.com/ermites-io/passwd)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ermites-io/passwd)](https://goreportcard.com/report/github.com/ermites-io/passwd)
+
+
 passwd
 ======
 
-A simple golang password hashing package.
+A simple & safe golang password hashing package.
 
 Description
 ===========
