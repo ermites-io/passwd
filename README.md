@@ -34,8 +34,6 @@ To keep things simple and to avoid a user to shoot himself in the foot, paramete
 You can also decide to use your own *Argon2* or *Scrypt* custom parameters with this package.
     
 
-
-
 How to Use the package
 ======================
 
