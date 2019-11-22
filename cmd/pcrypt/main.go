@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"git.sr.ht/~eau/passwd"
+	"github.com/ermites-io/passwd"
 )
 
 // a simple example of passwd package usage.

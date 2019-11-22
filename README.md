@@ -173,9 +173,7 @@ This is a work in progress and the default are still being worked out/verified (
 
 An example tool is go get'able here:
 
-* [github.com/ermites-io/passwd/cmd/pcrypt](https://github.com/ermites-io/passwd/cmd/pcrypt)
-
-Note: small issue with git.sr.ht that prevents for now to go get subpackages inside a module, i'm trying untangle the cause and provide a patch..
+	go get -u github.com/ermites-io/passwd/cmd/pcrypt
 
 hopefully this helps understanding how to use this package.      
 
