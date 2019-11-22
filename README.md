@@ -1,7 +1,6 @@
-[![Documentation](https://godoc.org/git.sr.ht/~eau/passwd?status.svg)](http://godoc.org/git.sr.ht/~eau/passwd)
+[![Documentation](https://godoc.org/github.com/ermites-io/passwd?status.svg)](http://godoc.org/github.com/ermites-io/passwd)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![builds.sr.ht status](https://builds.sr.ht/~eau/passwd.svg)](https://builds.sr.ht/~eau/passwd?)
-
+[![Go Report Card](https://goreportcard.com/badge/github.com/ermites-io/passwd)](https://goreportcard.com/report/github.com/ermites-io/passwd)
 passwd
 ======
 
@@ -101,7 +100,8 @@ create a password hashing object with *Argon2* default profile:
 	if err != nil {
 		// handle error
 	}
-	// hashed value: $2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6
+	// hashed value: 
+	// $2id$GlQX3F.KSYw1JLVv.LKDT.$1$65536$8$32$97DO7W9m/I8CTEQFKDa.VvEBTX1WepVv4qaWlt0OqH6
 ```
 
 ## Password Compare (non-masked parameters / non-key'ed / bcrypt) :
@@ -116,7 +116,7 @@ check a hash against a password:
 
 
 ## Password Hashing (**masked parameters**):
-
+```go
 	p, err := passwd.NewMasked(passwd.Argon2idDefault)
 	if err != nil {
 		// handle error
@@ -126,9 +126,12 @@ check a hash against a password:
 	if err != nil {
 		// handle error
 	}
-	// hashed value: $2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK
+	// hashed value: 
+	// $2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK
+```
 
 ## Password Hashing (**key'ed hashing** + **masked parameters**)
+```go
 	p, err := passwd.NewMasked(passwd.Argon2idDefault)
 	if err != nil {
 		// handle error
@@ -145,16 +148,17 @@ check a hash against a password:
 		// handle error
 	}
 	// hashed value: $2id$ihFFCGUfBHTqUfvUIos6X.$AmClxc.3uj6LsxjVGqpOZggyqIL.wQJ9zjY23ztsETK
+```
 
 ## Password Compare :
 
 check a hash against a password, use the profile you defined to compare:  
-
+```go
 	err := p.Compare(hashed, []byte("password"))
 	if err != nil {
 		// handle error
 	}
-
+```
 
 
 
@@ -165,9 +169,9 @@ This package exclusively uses crypto algorithm implementations shipped in go ext
 
 This is a work in progress and the default are still being worked out/verified (feedback is welcome).
 
-An example tool is provided in this repository:  
+An example tool is go get'able here:
 
-* [git.sr.ht/~eau/passwd/cmd/pcrypt](https://git.sr.ht/~eau/passwd/tree/master/cmd/pcrypt)
+* [github.com/ermites-io/passwd/cmd/pcrypt](https://github.com/ermites-io/passwd/cmd/pcrypt)
 
 Note: small issue with git.sr.ht that prevents for now to go get subpackages inside a module, i'm trying untangle the cause and provide a patch..
 
@@ -179,6 +183,7 @@ Changelog
 
 * v0.2.1: (MASTER BRANCH / NOT RELEASED/TAGGED THIS IS JUST MASTER).
 	* write key'd hash tests & concurrency tests. (ON GOING)
+	* moved to github hosting, after slow import and downtime.
 
 * v0.2.0: 
 	* added key'd hash ability (using sha3-256/384 instead sha1/sha256) based on facebook key'd hmac salt/hash using 
