@@ -164,24 +164,29 @@ func (p *ScryptParams) generateFromParams(salt, password []byte) (out []byte, er
 	var params string
 	var data []byte
 
+	// if salt mismatch, the profile dictactes, not the hash.
+	// the profile dictactes
+	psalt := make([]byte, p.Saltlen)
+	copy(psalt, salt)
+
+	// password
 	data = password
 
 	// we want to hmac a secret to have the resulting hash
 	if len(p.secret) > 0 {
-		data, err = hmacKeyHash(p.secret, salt, password)
+		data, err = hmacKeyHash(p.secret, psalt, password)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	key, err := scrypt.Key(data, salt, int(p.N), int(p.R), int(p.P), int(p.Keylen))
+	key, err := scrypt.Key(data, psalt, int(p.N), int(p.R), int(p.P), int(p.Keylen))
 	if err != nil {
 		return nil, err
 	}
 
 	// need to b64.
-	//salt64 := base64.StdEncoding.EncodeToString(salt)
-	salt64 := base64Encode(salt)
+	salt64 := base64Encode(psalt)
 
 	// params
 	if !p.Masked {
@@ -233,15 +238,8 @@ func (p *ScryptParams) compare(hashed, password []byte) error {
 		return ErrMismatch
 	}
 
-	// sanity checks.
-	// we had a subtle bug where a shorter salt with the same
-	// password encrypted would still match, as such you could have
-	// potentially generated thousands of small salted password
-	// to bruteforce and ran against the comparison function to
-	// find a collision which requires less power salts HAVE to
-	// be the same size that's it.
 	hashlen := uint32(len(compared))
-	if uint32(len(hashed)) != hashlen || len(salt) != int(p.Saltlen) {
+	if uint32(len(hashed)) != hashlen {
 		return ErrMismatch
 	}
 

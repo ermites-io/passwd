@@ -310,7 +310,7 @@ func TestNewMasked(t *testing.T) {
 	}
 }
 
-func TestNewCustom(t *testing.T) {
+func TestNewCustomMasked(t *testing.T) {
 	for i, test := range vectorNewCustomTest {
 		myprofileCustom, err := NewCustom(test.params)
 		if err != test.expectedNewCustom {

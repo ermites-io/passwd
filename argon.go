@@ -181,11 +181,16 @@ func (p *Argon2Params) generateFromParams(salt, password []byte) (out []byte, er
 	var hash bytes.Buffer
 	var data []byte
 
+	// if salt len mismatch, the profile dictactes, not the hash.
+	// the profile dictactes
+	psalt := make([]byte, p.Saltlen)
+	copy(psalt, salt)
+
 	data = password
 
 	// we want to hmac a secret to have the resulting hash
 	if len(p.secret) > 0 {
-		data, err = hmacKeyHash(p.secret, salt, password)
+		data, err = hmacKeyHash(p.secret, psalt, password)
 		if err != nil {
 			return nil, err
 		}
@@ -194,17 +199,16 @@ func (p *Argon2Params) generateFromParams(salt, password []byte) (out []byte, er
 	switch p.Version {
 	case Argon2i:
 		id = idArgon2i
-		key = argon2.Key(data, salt, p.Time, p.Memory, p.Thread, p.Keylen)
+		key = argon2.Key(data, psalt, p.Time, p.Memory, p.Thread, p.Keylen)
 	case Argon2id:
 		fallthrough
 	default:
 		id = idArgon2id
-		key = argon2.IDKey(data, salt, p.Time, p.Memory, p.Thread, p.Keylen)
+		key = argon2.IDKey(data, psalt, p.Time, p.Memory, p.Thread, p.Keylen)
 	}
 
 	// need to b64.
-	//salt64 := base64.StdEncoding.EncodeToString(salt)
-	salt64 := base64Encode(salt)
+	salt64 := base64Encode(psalt)
 
 	// params
 	if !p.Masked {
@@ -259,17 +263,8 @@ func (p *Argon2Params) compare(hashed, password []byte) error {
 		return ErrMismatch
 	}
 
-	// yes in case things are padded by mistake depending on storage
-	// whatever.. the params tells us what to verify.
-	//
-	// we had a subtle bug where a shorter salt with the same
-	// password encrypted would still match, as such you could have
-	// potentially generated thousands of small salted password
-	// to bruteforce and ran against the comparison function to
-	// find a collision which requires less power, salts HAVE to
-	// be the same size that's it.
 	hashlen := uint32(len(compared))
-	if uint32(len(hashed)) != hashlen || len(salt) != int(p.Saltlen) {
+	if uint32(len(hashed)) != hashlen {
 		return ErrMismatch
 	}
 
