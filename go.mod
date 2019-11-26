@@ -1,4 +1,4 @@
-module git.sr.ht/~eau/passwd
+module github.com/ermites-io/passwd
 
 go 1.12
 
