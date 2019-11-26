@@ -203,6 +203,9 @@ Changelog
 	* bugfixes and code cleaning.
 	* initial key'd hash tests & compatibility tests.
 
+* v0.1.4: 
+	* fix the move to GITHUB with a new tag to update go.mod
+
 * v0.1.3: 
 	* fix a salted+masked+custom profile comparison issue.
 	* NewCustom example+tests (issue #3)
@@ -221,6 +224,10 @@ bcrypt is just a wrapper to `x/crypto/bcrypt`, only scrypt and argon support mas
 
 bcrypt is implemented for migration purposes, **`passwd.Compare()`** will works perfectly with `x/crypto/bcrypt` hashed passwords while 
 using a modern profile to store new passwords.      
+
+version < to v0.2.0 & v0.1.3 were tagged on git.sr.ht, so in order to not break
+the global summing of package version, git.sr.ht remains up but won't be updated
+anymore, and all future versions are released here.
 
 
 
