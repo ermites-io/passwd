@@ -185,6 +185,8 @@ Changelog
 	* cleaned up the compare() function for each profiles, as the Profile
 	  ditactes the hashing params, not the hash (per opposition to passwd.Compare()
 	  which rely on the hash to determine the parameters)
+	* officialize the LTS move to github (previous tags might refer to
+	  git.sr.ht, please don't use them)
 
 * v0.2.0: 
 	* added key'd hash ability (using sha3-256/384 instead sha1/sha256) based on facebook key'd hmac salt/hash using 
