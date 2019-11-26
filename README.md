@@ -179,9 +179,13 @@ hopefully this helps understanding how to use this package.
 Changelog
 =========
 
-* v0.2.1: (MASTER BRANCH / NOT RELEASED/TAGGED THIS IS JUST MASTER).
+* v0.2.2: (MASTER BRANCH / NOT RELEASED/TAGGED THIS IS JUST MASTER).
 	* write key'd hash tests & concurrency tests. (ON GOING)
-	* moved to github hosting, after slow import and downtime.
+
+* v0.2.1: 
+	* moved to github hosting, after slow import and downtime. (which breaks
+	  0.1.3 & 0.2.0 if you are moving from git.sr.ht, please use 0.1.4 and
+	  0.2.1 instead.)
 	* cleaned up the compare() function for each profiles, as the Profile
 	  ditactes the hashing params, not the hash (per opposition to passwd.Compare()
 	  which rely on the hash to determine the parameters)
