@@ -184,8 +184,7 @@ Changelog
 
 * v0.2.1: (NEW HOME!)
 	* moved to github hosting, after slow import and downtime. (which breaks
-	  0.1.3 & 0.2.0 if you are moving from git.sr.ht, please use 0.1.4 and
-	  0.2.1 instead.)
+	  0.1.3 & 0.2.0 if you are moving from git.sr.ht, please use 0.2.1 instead)
 	* cleaned up the compare() function for each profiles, as the Profile
 	  ditactes the hashing params, not the hash (per opposition to passwd.Compare()
 	  which rely on the hash to determine the parameters)
