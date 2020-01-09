@@ -181,6 +181,8 @@ Changelog
 
 * v0.2.2: (MASTER BRANCH / NOT RELEASED/TAGGED THIS IS JUST MASTER).
 	* write key'd hash tests & concurrency tests. (ON GOING)
+	* added link to Go Secure Coding Practice where passwd is referred.
+	* added TODO in README for next tasks.
 
 * v0.2.1: (NEW HOME!)
 	* moved to github hosting, after slow import and downtime. (which breaks
@@ -226,6 +228,13 @@ the global golang summing of package versions, git.sr.ht remains up but won't be
 anymore, and all future versions are released here, to upgrade your package just
 use github.com/ermites-io/passwd v0.2.1+
 
+TODO
+====
+* password complexity check routine.
+* password generation routine.
+* add hash parsing test
+* add CI/CD build test to sourcehut for alpine, openbsd, freebsd, netbsd building tests.
+* memory profiling / benchmarks
 
 
 Featuring (because there is always a star in your production..)
@@ -241,3 +250,5 @@ Resources
 
 * [password hashing intro](https://www.win.tue.nl/applied_crypto/2016/20161215_pwd.pdf)
 * [key'd hashes](https://bristolcrypto.blogspot.com/2015/01/password-hashing-according-to-facebook.html)
+* [OWASP Go Secure Coding Practice guide](https://github.com/OWASP/Go-SCP)
+* [OWASP Go Secure Coding Practice guide: password validation & storage section](https://github.com/OWASP/Go-SCP/blob/master/src/authentication-password-management/validation-and-storage.md)
