@@ -52,7 +52,7 @@ func NewCode(hashed, userdata []byte, d time.Duration) string {
 	return base64.RawURLEncoding.EncodeToString(ciphertext)
 }
 
-func ValidateResetCode(hashed []byte, code string) ([]byte, error) {
+func VerifyCode(hashed []byte, code string) ([]byte, error) {
 	var r Code
 
 	rawcode, err := base64.RawURLEncoding.DecodeString(code)
