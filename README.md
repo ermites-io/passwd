@@ -179,10 +179,11 @@ hopefully this helps understanding how to use this package.
 Changelog
 =========
 
-* v0.2.2: (MASTER BRANCH / NOT RELEASED/TAGGED THIS IS JUST MASTER).
+* v0.3.0: (MASTER BRANCH / NOT RELEASED/TAGGED THIS IS JUST MASTER).
 	* write key'd hash tests & concurrency tests. (ON GOING)
 	* added link to Go Secure Coding Practice where passwd is referred.
 	* added TODO in README for next tasks.
+	* added reset submodule, easy stateless reset password helpers.
 
 * v0.2.1: (NEW HOME!)
 	* moved to github hosting, after slow import and downtime. (which breaks
