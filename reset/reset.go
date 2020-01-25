@@ -5,25 +5,49 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"runtime"
 	"time"
 
 	xcha "golang.org/x/crypto/chacha20poly1305"
 	"golang.org/x/crypto/sha3"
 )
 
+// Code defines the content of the reset code
+// an expiration time boundary and user supplied data.
 type Code struct {
 	Time     int64
 	Userdata []byte // store what you need for your app.
 }
 
-var (
+const (
+	// DefaultExpiration defines the proposed expiration TTL of the reset
+	// codes.
 	DefaultExpiration = 10 * time.Minute
+	// ExpiryOneHour defines a one hour duration for expiration.
+	ExpiryOneHour = 1 * time.Hour
+	// ExpiryOneDay defines a one day duration for the reset code
+	// expiration.
+	ExpiryOneDay = 24 * time.Hour
 )
 
-func NewCode(hashed, userdata []byte, d time.Duration) string {
+func zero(buffer []byte) {
+	for i, _ := range buffer {
+		buffer[i] = 0x00
+	}
+	runtime.KeepAlive(buffer)
+}
 
-	fmt.Printf("hashed: %s\n", hashed)
-	fmt.Printf("userdata: %s\n", userdata)
+func zero32(buffer [32]byte) {
+	for i, _ := range buffer {
+		buffer[i] = 0x00
+	}
+	runtime.KeepAlive(buffer)
+}
+
+// NewCode creates a new packed reset.Code embedding userdata and valid for d
+// time.Duration using hashed password.
+func NewCode(hashed, userdata []byte, d time.Duration) (string, error) {
+	var nilstr string
 
 	r := Code{
 		Time:     time.Now().Add(d).Unix(),
@@ -32,26 +56,32 @@ func NewCode(hashed, userdata []byte, d time.Duration) string {
 
 	m, err := json.Marshal(&r)
 	if err != nil {
-		panic(err)
+		return nilstr, err
 	}
 
+	// i need to wipe both at the end.
 	keysha := sha3.Sum256(hashed)
-	// TODO wipe key
-	nonce := make([]byte, xcha.NonceSizeX)
+	key := keysha[:]
+	// wipe key on exit
+	defer zero(key)
+	defer zero32(keysha)
 
+	nonce := make([]byte, xcha.NonceSizeX)
 	_, err = rand.Read(nonce)
 	if err != nil {
-		panic(err)
+		return nilstr, err
 	}
-	c, err := xcha.NewX(keysha[:])
+	c, err := xcha.NewX(key)
 	if err != nil {
-		panic(err)
+		return nilstr, err
 	}
 
 	ciphertext := c.Seal(nonce, nonce, m, nonce)
-	return base64.RawURLEncoding.EncodeToString(ciphertext)
+	return base64.RawURLEncoding.EncodeToString(ciphertext), nil
 }
 
+// VerifyCode verify the provided code using hashed password and returns the
+// embedded userdata.
 func VerifyCode(hashed []byte, code string) ([]byte, error) {
 	var r Code
 
@@ -61,14 +91,19 @@ func VerifyCode(hashed []byte, code string) ([]byte, error) {
 	}
 
 	if len(rawcode) <= xcha.NonceSizeX {
-		return nil, fmt.Errorf("invalid")
+		return nil, fmt.Errorf("invalid input")
 	}
 
 	keysha := sha3.Sum256(hashed)
+	key := keysha[:]
+	// wipe key on exit
+	defer zero(key)
+	defer zero32(keysha)
+
 	nonce := rawcode[:xcha.NonceSizeX]
 	ciphertext := rawcode[xcha.NonceSizeX:]
 
-	c, err := xcha.NewX(keysha[:])
+	c, err := xcha.NewX(key)
 	if err != nil {
 		return nil, err
 	}
@@ -85,8 +120,6 @@ func VerifyCode(hashed []byte, code string) ([]byte, error) {
 
 	timeCode := time.Unix(r.Time, 0)
 	timenow := time.Now()
-
-	fmt.Printf("now: %v code: %v\n", timenow.Unix(), r.Time)
 
 	if timenow.After(timeCode) {
 		return nil, fmt.Errorf("expired")
