@@ -29,18 +29,6 @@ func main() {
 	flag.Parse()
 	argv := flag.Args()
 
-	switch {
-	case *argonFlag:
-		profile = passwd.Argon2idDefault
-	case *scryptFlag:
-		profile = passwd.ScryptDefault
-	case *bcryptFlag:
-		profile = passwd.BcryptDefault
-	default:
-		fmt.Printf("no derivation, so nothing to do")
-		os.Exit(0)
-	}
-
 	// ugly.. but for now.. and it is a test program
 	if *resetFlag || len(*verifyFlag) > 0 {
 		switch {
@@ -52,9 +40,21 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+			fmt.Printf("validated! userdata: %s\n", userdata)
 		}
 
 	} else {
+		switch {
+		case *argonFlag:
+			profile = passwd.Argon2idDefault
+		case *scryptFlag:
+			profile = passwd.ScryptDefault
+		case *bcryptFlag:
+			profile = passwd.BcryptDefault
+		default:
+			fmt.Printf("no derivation, so nothing to do")
+			os.Exit(0)
+		}
 
 		// create a passwd profile handler
 		ph, err := passwd.New(profile)
