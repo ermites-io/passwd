@@ -183,7 +183,7 @@ Changelog
 	* write key'd hash tests & concurrency tests. (ON GOING)
 	* added link to Go Secure Coding Practice where passwd is referred.
 	* added TODO in README for next tasks.
-	* added reset submodule, easy stateless reset password helpers.
+	* added passwd/reset submodule, easy stateless reset password helpers.
 
 * v0.2.1: (NEW HOME!)
 	* moved to github hosting, after slow import and downtime. (which breaks
@@ -233,6 +233,7 @@ TODO
 ====
 * password complexity check routine.
 * password generation routine.
+* stateless password reset helpers
 * add hash parsing test
 * add CI/CD build test to sourcehut for alpine, openbsd, freebsd, netbsd building tests.
 * memory profiling / benchmarks
