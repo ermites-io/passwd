@@ -1,3 +1,4 @@
+//go:build go1.12
 // +build go1.12
 
 package passwd
@@ -263,10 +264,13 @@ func (p *Argon2Params) compare(hashed, password []byte) error {
 		return ErrMismatch
 	}
 
-	hashlen := uint32(len(compared))
-	if uint32(len(hashed)) != hashlen {
-		return ErrMismatch
-	}
+	/* the subtle package handles that already */
+	/*
+		hashlen := uint32(len(compared))
+		if uint32(len(hashed)) != hashlen {
+			return ErrMismatch
+		}
+	*/
 
 	//fmt.Printf("COMPARE (%d)%s vs (%d)%s\n", len(hashed), hashed, len(compared), compared)
 	//if subtle.ConstantTimeCompare(compared, hashed[:hashlen]) == 1 {

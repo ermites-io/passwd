@@ -1,3 +1,4 @@
+//go:build go1.11
 // +build go1.11
 
 package passwd
@@ -158,7 +159,7 @@ func (p *ScryptParams) deriveFromPassword(password []byte) ([]byte, error) {
 	return key, nil
 }
 
-//func (p *ScryptParams) generateFromParams(password []byte) (out []byte, err error) {
+// func (p *ScryptParams) generateFromParams(password []byte) (out []byte, err error) {
 func (p *ScryptParams) generateFromParams(salt, password []byte) (out []byte, err error) {
 	var hash bytes.Buffer
 	var params string
@@ -238,10 +239,13 @@ func (p *ScryptParams) compare(hashed, password []byte) error {
 		return ErrMismatch
 	}
 
-	hashlen := uint32(len(compared))
-	if uint32(len(hashed)) != hashlen {
-		return ErrMismatch
-	}
+	/* the subtle package handles that already */
+	/*
+		hashlen := uint32(len(compared))
+		if uint32(len(hashed)) != hashlen {
+			return ErrMismatch
+		}
+	*/
 
 	// the hashed[:hashlen] is to avoid padded data invalid compare while the hash is actually good
 	// think like a wrongly defined database column type (i.e. char(255)) will return the string padded with spaces

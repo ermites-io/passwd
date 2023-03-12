@@ -1,3 +1,4 @@
+//go:build go1.12
 // +build go1.12
 
 package passwd
@@ -9,11 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-//
-//
 // TestVectors
-//
-//
 var vectorNewTests = []struct {
 	profile  HashProfile
 	expected error
@@ -37,6 +34,86 @@ var vectorCompatibility = []struct {
 	secret  []byte
 	want    error
 }{
+	{ // scrypt all good
+		ScryptDefault,
+		false,
+		[]byte("$2s$sT/eXtwSAJHP6rsglmolxe$65536$8$1$32$LIFT/xDaVv1XcFRLY/XBLjIztaJoK9BLtjFIiLnaXvW"),
+		[]byte("prout"),
+		nil,
+		nil,
+	},
+	{ // scrypt wrong pass
+		ScryptDefault,
+		false,
+		[]byte("$2s$sT/eXtwSAJHP6rsglmolxe$65536$8$1$32$LIFT/xDaVv1XcFRLY/XBLjIztaJoK9BLtjFIiLnaXvW"),
+		[]byte("proutt"),
+		nil,
+		ErrMismatch,
+	},
+	{ // scrypt corrupted hash
+		ScryptDefault,
+		false,
+		[]byte("$2s$sT/eXtwSAJHP6rsglmolxe$65536$8$1$32$LIFT/xDaVv1XcFRLY/XBLjIztaJoK9BLtjFIiLnaX"),
+		[]byte("prout"),
+		nil,
+		ErrMismatch,
+	},
+	{ // scrypt masked hash, but masked disabled (should be enabled to match)
+		ScryptDefault,
+		false,
+		[]byte("$2s$Lh8gOCN2H29b.O4S9BDzNO$zShzcWyU7K6PAVwylCkPF9i7aNpmQ2NB5/O6BqlCI3i"),
+		[]byte("prout"),
+		nil,
+		ErrMismatch,
+	},
+	{ // scrypt masked hash, but masked disabled (should be enabled to match)
+		ScryptDefault,
+		true,
+		[]byte("$2s$Lh8gOCN2H29b.O4S9BDzNO$zShzcWyU7K6PAVwylCkPF9i7aNpmQ2NB5/O6BqlCI3i"),
+		[]byte("prout"),
+		nil,
+		nil,
+	},
+	{ // scrypt corrupted hash
+		ScryptDefault,
+		false,
+		[]byte("$2s$sT/eXtwSAJHP6rsglmolxe$65536$8$1$32$LIFT/xDaVv1XcFRLY/XBLjIztaJoK9BLtjFIiLnaXvW         "),
+		[]byte("prout"),
+		nil,
+		ErrMismatch,
+	},
+	{ // scrypt corrupted hash
+		ScryptDefault,
+		false,
+		[]byte("$2s$sT/eXtwSAJHP6rsglmolxe$65536$8$1$32$LIFT/xDaVv1XcFRLY/XBLjIztaJoK9BLtjFIiLnaXvWGGG"),
+		[]byte("prout"),
+		nil,
+		ErrMismatch,
+	},
+	{ // bcrypt all good
+		BcryptDefault,
+		false,
+		[]byte("$2a$10$zlKoI5wrYXIa9d186fXI9OAic/y2F5YNyBXpmz5xTpl9hhBAtza6m"),
+		[]byte("prout"),
+		nil,
+		nil,
+	},
+	{ // bcrypt wrong password
+		BcryptDefault,
+		false,
+		[]byte("$2a$10$zlKoI5wrYXIa9d186fXI9OAic/y2F5YNyBXpmz5xTpl9hhBAtza6m"),
+		[]byte("proutt"),
+		nil,
+		ErrMismatch,
+	},
+	{ // bcrypt correupted hash
+		BcryptDefault,
+		false,
+		[]byte("$2a$10$zlKoI5wrYXIa9d186fXI9OAic/y2F5YNyBXpmz5xTpl9hhBAtza6n"),
+		[]byte("prout"),
+		nil,
+		ErrMismatch,
+	},
 	{ // all good
 		Argon2idDefault,
 		false,
@@ -267,11 +344,7 @@ var vectorNewCustomTestBcrypt = []struct {
 	}, BcryptDefault, "testpassword", nil, nil, ErrMismatch},
 }
 
-//
-//
 // TestFunction
-//
-//
 func TestNew(t *testing.T) {
 	for i, test := range vectorNewTests {
 		myprofile, err := New(test.profile)
