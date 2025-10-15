@@ -1,3 +1,4 @@
+//go:build go1.11
 // +build go1.11
 
 package main
@@ -33,7 +34,10 @@ func main() {
 	if *resetFlag || len(*verifyFlag) > 0 {
 		switch {
 		case *resetFlag:
-			resetcode := reset.NewCode([]byte(*secretFlag), []byte(*dataFlag), reset.DefaultExpiration)
+			resetcode, err := reset.NewCode([]byte(*secretFlag), []byte(*dataFlag), reset.DefaultExpiration)
+			if err != nil {
+				panic(err)
+			}
 			fmt.Printf("reset code: %s\n", resetcode)
 		case len(*verifyFlag) > 0:
 			userdata, err := reset.VerifyCode([]byte(*secretFlag), *verifyFlag)
