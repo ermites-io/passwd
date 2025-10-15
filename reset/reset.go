@@ -31,14 +31,14 @@ const (
 )
 
 func zero(buffer []byte) {
-	for i, _ := range buffer {
+	for i := range buffer {
 		buffer[i] = 0x00
 	}
 	runtime.KeepAlive(buffer)
 }
 
 func zero32(buffer [32]byte) {
-	for i, _ := range buffer {
+	for i := range buffer {
 		buffer[i] = 0x00
 	}
 	runtime.KeepAlive(buffer)

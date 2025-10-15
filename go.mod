@@ -1,9 +1,10 @@
 module github.com/ermites-io/passwd
 
-go 1.12
+go 1.24.0
 
 require (
-	golang.org/x/crypto v0.0.0-20200109152110-61a87790db17
-	golang.org/x/sys v0.0.0-20200113162924-86b910548bc1 // indirect
-	golang.org/x/text v0.3.2
+	golang.org/x/crypto v0.43.0
+	golang.org/x/text v0.30.0
 )
+
+require golang.org/x/sys v0.37.0 // indirect
