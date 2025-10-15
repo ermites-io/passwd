@@ -1,4 +1,5 @@
-// +build go1.12
+//go:build go1.21
+// +build go1.21
 
 // Package passwd provides simple primitives for hashing and verifying
 // password.
@@ -96,19 +97,17 @@ const (
 	Bcrypt
 )
 
-var (
-	// XXX not sure yet it's the right approach
-	// limiting the choice for password storage avoid shooting yourself in
-	// the foot.
-	params = map[HashProfile]interface{}{
-		Argon2idDefault:  argonCommonParameters,
-		Argon2idParanoid: argonParanoidParameters,
-		ScryptDefault:    scryptCommonParameters,
-		ScryptParanoid:   scryptParanoidParameters,
-		BcryptDefault:    bcryptCommonParameters,
-		BcryptParanoid:   bcryptParanoidParameters,
-	}
-)
+// XXX not sure yet it's the right approach
+// limiting the choice for password storage avoid shooting yourself in
+// the foot.
+var params = map[HashProfile]interface{}{
+	Argon2idDefault:  argonCommonParameters,
+	Argon2idParanoid: argonParanoidParameters,
+	ScryptDefault:    scryptCommonParameters,
+	ScryptParanoid:   scryptParanoidParameters,
+	BcryptDefault:    bcryptCommonParameters,
+	BcryptParanoid:   bcryptParanoidParameters,
+}
 
 // Profile define the hashing profile you have select and is created using
 // New() / NewMasked() / NewCustom()
@@ -139,21 +138,21 @@ func New(profile HashProfile) (*Profile, error) {
 		case Argon2Params:
 			p = Profile{
 				t: profile,
-				//params: (*Argon2Params)(&v), // then typecast to avoid *interface{}
+				// params: (*Argon2Params)(&v), // then typecast to avoid *interface{}
 				params: &v, // then typecast to avoid *interface{}
 			}
 			return &p, nil
 		case BcryptParams:
 			p = Profile{
 				t: profile,
-				//params: (*BcryptParams)(&v), // then typecast to avoid *interface{}
+				// params: (*BcryptParams)(&v), // then typecast to avoid *interface{}
 				params: &v, // then typecast to avoid *interface{}
 			}
 			return &p, nil
 		case ScryptParams:
 			p = Profile{
 				t: profile,
-				//params: (*ScryptParams)(&v), // then typecast to avoid *interface{}
+				// params: (*ScryptParams)(&v), // then typecast to avoid *interface{}
 				params: &v, // then typecast to avoid *interface{}
 			}
 			return &p, nil
@@ -180,14 +179,14 @@ func NewMasked(profile HashProfile) (*Profile, error) {
 			v.Masked = true
 			p = Profile{
 				t: profile,
-				//params: (*ScryptParams)(&v),
+				// params: (*ScryptParams)(&v),
 				params: &v,
 			}
 		case Argon2Params:
 			v.Masked = true
 			p = Profile{
 				t: profile,
-				//params: (*Argon2Params)(&v),
+				// params: (*Argon2Params)(&v),
 				params: &v,
 			}
 		}
@@ -262,10 +261,10 @@ func (p *Profile) Derive(password, salt []byte) ([]byte, error) {
 // it takes the plaintext password to hash and output its hashed value
 // ready for storage
 func (p *Profile) Hash(password []byte) ([]byte, error) {
-	//fmt.Printf("TYPE: %d PARAMS: %T\n", p.t, p.params)
+	// fmt.Printf("TYPE: %d PARAMS: %T\n", p.t, p.params)
 	switch v := p.params.(type) {
 	case *BcryptParams:
-		//fmt.Printf("BCRYPT TYPE: %d PARAMS: %T\n", p.t, v)
+		// fmt.Printf("BCRYPT TYPE: %d PARAMS: %T\n", p.t, v)
 		return v.generateFromPassword(password)
 	case *ScryptParams:
 		// TODO minimum params validation
@@ -280,7 +279,7 @@ func (p *Profile) Hash(password []byte) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		//fmt.Printf("v.Masked: %v\n", v.Masked)
+		// fmt.Printf("v.Masked: %v\n", v.Masked)
 		return v.generateFromPassword(password)
 	}
 	return nil, ErrUnsupported
@@ -320,9 +319,9 @@ func (p *Profile) Compare(hashed, password []byte) error {
 
 // Compare verify a non-key'd & non-mask'd hash values against a plaintext password.
 func Compare(hashed, password []byte) error {
-	//var version, stuff string
-	//var num int
-	//fmt.Printf("HASHED: %s\n", hashed)
+	// var version, stuff string
+	// var num int
+	// fmt.Printf("HASHED: %s\n", hashed)
 	// FIELDS: ["2s" "ssSDTbMpkLQtIhZ558igpO" "16" "65536" "4" "32" "J/xbjklkXIhBqZ3FAF4t5xWu4rTjxr79eIjc28VYuqK"]
 	// field0 : sig
 	// field1 : salt
@@ -337,7 +336,7 @@ func Compare(hashed, password []byte) error {
 		return ErrMismatch
 	}
 
-	//fmt.Printf("PARAM TYPE: %T vs %T\n", params, &Argon2Params{})
+	// fmt.Printf("PARAM TYPE: %T vs %T\n", params, &Argon2Params{})
 	switch v := params.(type) {
 	case *BcryptParams:
 		return v.compare(hashed, password)

@@ -1,4 +1,5 @@
-// +build go1.12
+//go:build go1.21
+// +build go1.21
 
 package passwd
 
@@ -13,9 +14,7 @@ const (
 	separatorRune = rune('$')
 )
 
-var (
-	rangeTableSeparator = rangetable.New(separatorRune)
-)
+var rangeTableSeparator = rangetable.New(separatorRune)
 
 func token(c rune) bool {
 	return unicode.Is(rangeTableSeparator, c)
@@ -56,7 +55,7 @@ func parseFromHashToParams(hashed []byte) (interface{}, error) {
 }
 
 func parseFromHashToSalt(hashed []byte) ([]byte, error) {
-	//var nilstr string
+	// var nilstr string
 
 	fields := strings.FieldsFunc(string(hashed), token)
 	if len(fields) < 3 {
@@ -77,5 +76,4 @@ func parseFromHashToSalt(hashed []byte) ([]byte, error) {
 		return salt, nil
 	}
 	return nil, ErrParse
-
 }

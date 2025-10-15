@@ -1,5 +1,5 @@
-//go:build go1.11
-// +build go1.11
+//go:build go1.21
+// +build go1.21
 
 package passwd
 
@@ -58,7 +58,7 @@ var (
 		Saltlen: 16,
 		Keylen:  32,
 		// salt
-		//Masked: false,
+		// Masked: false,
 	}
 
 	scryptCommonParameters = ScryptParams{
@@ -68,7 +68,7 @@ var (
 		Saltlen: 16,
 		Keylen:  32,
 		// salt
-		//Masked: false,
+		// Masked: false,
 	}
 
 	scryptParanoidParameters = ScryptParams{
@@ -78,7 +78,7 @@ var (
 		Saltlen: 32,
 		Keylen:  64,
 		// salt
-		//Masked: false,
+		// Masked: false,
 	}
 )
 
@@ -137,7 +137,7 @@ func newScryptParamsFromFields(fields []string) (*ScryptParams, error) {
 		P:       p,
 		Saltlen: saltlen,
 		Keylen:  keylen,
-		//salt:    salt,
+		// salt:    salt,
 	}
 
 	return &sp, nil
@@ -213,7 +213,7 @@ func (p *ScryptParams) generateFromParams(salt, password []byte) (out []byte, er
 	}
 
 	out = hash.Bytes()
-	//return hash.Bytes(), nil
+	// return hash.Bytes(), nil
 	return out, nil
 }
 

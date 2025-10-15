@@ -1,5 +1,5 @@
-//go:build go1.12
-// +build go1.12
+//go:build go1.21
+// +build go1.21
 
 package passwd
 
@@ -55,8 +55,8 @@ var (
 		Thread:  8,
 		Saltlen: 16,
 		Keylen:  16,
-		//salt
-		//masked: false,
+		// salt
+		// masked: false,
 	}
 
 	// XXX need more test/analysis
@@ -67,8 +67,8 @@ var (
 		Thread:  16,
 		Saltlen: 16,
 		Keylen:  32,
-		//salt
-		//masked: false,
+		// salt
+		// masked: false,
 	}
 
 	// XXX need more test/analysis
@@ -79,8 +79,8 @@ var (
 		Thread:  32,
 		Saltlen: 32,
 		Keylen:  64,
-		//salt
-		//masked: false,
+		// salt
+		// masked: false,
 	}
 )
 
@@ -144,7 +144,7 @@ func newArgon2ParamsFromFields(fields []string) (*Argon2Params, error) {
 		Thread:  thread,
 		Saltlen: saltlen,
 		Keylen:  keylen,
-		//salt:    salt,
+		// salt:    salt,
 	}
 
 	return &ap, nil
@@ -237,13 +237,12 @@ func (p *Argon2Params) generateFromParams(salt, password []byte) (out []byte, er
 	// ID:
 	// $2D == ARGON2D
 	// $2ID == Argon2id
-	//return hash.Bytes(), nil
+	// return hash.Bytes(), nil
 	out = hash.Bytes()
 	return out, nil
 }
 
 func (p *Argon2Params) generateFromPassword(password []byte) ([]byte, error) {
-
 	salt, err := getSalt(p.Saltlen)
 	if err != nil {
 		return nil, err
@@ -272,8 +271,8 @@ func (p *Argon2Params) compare(hashed, password []byte) error {
 		}
 	*/
 
-	//fmt.Printf("COMPARE (%d)%s vs (%d)%s\n", len(hashed), hashed, len(compared), compared)
-	//if subtle.ConstantTimeCompare(compared, hashed[:hashlen]) == 1 {
+	// fmt.Printf("COMPARE (%d)%s vs (%d)%s\n", len(hashed), hashed, len(compared), compared)
+	// if subtle.ConstantTimeCompare(compared, hashed[:hashlen]) == 1 {
 	if subtle.ConstantTimeCompare(compared, hashed) == 1 {
 		return nil
 	}

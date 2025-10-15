@@ -1,4 +1,5 @@
-// +build go1.11
+//go:build go1.21
+// +build go1.21
 
 // Copyright 2011 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
@@ -6,8 +7,7 @@
 
 // taken from the x/crypto/bcrypt package internals
 
-//package bcrypt
-
+// package bcrypt
 package passwd
 
 import "encoding/base64"

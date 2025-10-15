@@ -1,5 +1,5 @@
-//go:build go1.12
-// +build go1.12
+//go:build go1.21
+// +build go1.21
 
 package passwd
 
@@ -444,14 +444,14 @@ func TestNewCustomBcrypt(t *testing.T) {
 		if err != nil {
 			t.Fatalf("test #%d: profile: %d err: %v vs expected: %v\n", i, test.profileEqual, err, test.expectedNewCustom)
 		}
-		//fmt.Printf("PROFILE ORIG: %v %T\n", myprofileOrig.t, myprofileOrig.params)
+		// fmt.Printf("PROFILE ORIG: %v %T\n", myprofileOrig.t, myprofileOrig.params)
 
 		hashCustom, err := myprofileCustom.Hash([]byte(test.passwordToHash))
 		if err != test.expectedHash {
 			t.Fatalf("test #%d (hash): profile: %v err: %v vs expected: %v\n", i, test.params, err, test.expectedHash)
 		}
 
-		//fmt.Printf("PROFILE ORIG: %v %T\n", myprofileOrig.t, myprofileOrig.params)
+		// fmt.Printf("PROFILE ORIG: %v %T\n", myprofileOrig.t, myprofileOrig.params)
 		hashOrig, err := myprofileOrig.Hash([]byte(test.passwordToHash))
 		if err != test.expectedHash {
 			t.Fatalf("test #%d (hash): profile: %d err: %v vs expected: %v\n", i, test.profileEqual, err, test.expectedHash)
@@ -566,7 +566,7 @@ func ExampleProfile_Compare() {
 	}
 	err = p.Compare(hashedPassword, []byte("prout"))
 	if err != nil {
-		//panic(err)
+		// panic(err)
 		fmt.Printf("err: %v\n", err)
 	}
 	fmt.Printf("compared")

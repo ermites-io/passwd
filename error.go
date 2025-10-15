@@ -1,4 +1,5 @@
-// +build go1.12
+//go:build go1.21
+// +build go1.21
 
 package passwd
 
