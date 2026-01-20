@@ -117,7 +117,7 @@ var vectorCompatibility = []struct {
 	{ // all good
 		Argon2idDefault,
 		false,
-		[]byte("$2id$jHPEXqOJ7PEXodl75xJd.e$1$65536$16$32$xR87mnbB548T4Sj4uSQ0mAjNtIG2D2uG.Aob28QJY2u"), // prout
+		[]byte("$argon2id$jHPEXqOJ7PEXodl75xJd.e$1$65536$16$32$xR87mnbB548T4Sj4uSQ0mAjNtIG2D2uG.Aob28QJY2u"), // prout
 		[]byte("prout"),
 		nil,
 		nil,
@@ -125,7 +125,7 @@ var vectorCompatibility = []struct {
 	{ // invalid password
 		Argon2idDefault,
 		false,
-		[]byte("$2id$jHPEXqOJ7PEXodl75xJd.e$1$65536$16$32$xR87mnbB548T4Sj4uSQ0mAjNtIG2D2uG.Aob28QJY2u"), // prout
+		[]byte("$argon2id$jHPEXqOJ7PEXodl75xJd.e$1$65536$16$32$xR87mnbB548T4Sj4uSQ0mAjNtIG2D2uG.Aob28QJY2u"), // prout
 		[]byte("pprout"),
 		nil,
 		ErrMismatch,
@@ -134,7 +134,7 @@ var vectorCompatibility = []struct {
 	{ // masked and valid
 		Argon2idDefault,
 		true,
-		[]byte("$2id$Ubnnyt80onlzG/5MlokXmu$xvpXX5.3eZBjihHNFEVjLTtURakelLxlkrjBrzv9KA6"), // prout
+		[]byte("$argon2id$Ubnnyt80onlzG/5MlokXmu$xvpXX5.3eZBjihHNFEVjLTtURakelLxlkrjBrzv9KA6"), // prout
 		[]byte("prout"),
 		nil,
 		nil,
@@ -142,7 +142,7 @@ var vectorCompatibility = []struct {
 	{ // masked compare with non masked
 		Argon2idDefault,
 		false, // invalid
-		[]byte("$2id$Ubnnyt80onlzG/5MlokXmu$xvpXX5.3eZBjihHNFEVjLTtURakelLxlkrjBrzv9KA6"), // prout
+		[]byte("$argon2id$Ubnnyt80onlzG/5MlokXmu$xvpXX5.3eZBjihHNFEVjLTtURakelLxlkrjBrzv9KA6"), // prout
 		[]byte("prout"),
 		nil,
 		ErrMismatch,
@@ -150,7 +150,7 @@ var vectorCompatibility = []struct {
 	{ // masked, non-key'd, trying to compare with key'd
 		Argon2idDefault,
 		true,
-		[]byte("$2id$Ubnnyt80onlzG/5MlokXmu$xvpXX5.3eZBjihHNFEVjLTtURakelLxlkrjBrzv9KA6"), // prout
+		[]byte("$argon2id$Ubnnyt80onlzG/5MlokXmu$xvpXX5.3eZBjihHNFEVjLTtURakelLxlkrjBrzv9KA6"), // prout
 		[]byte("prout"),
 		[]byte("secret"), // invalid
 		ErrMismatch,
@@ -158,7 +158,7 @@ var vectorCompatibility = []struct {
 	{ // masked, key'd and valid
 		Argon2idDefault,
 		true,
-		[]byte("$2id$yapnlBLmLVowNBPO.LJhGu$QsWAGb1pNhM2BotmZrKSfuEFGe1bWDtKF9Qz29rCEBq"), // prout
+		[]byte("$argon2id$yapnlBLmLVowNBPO.LJhGu$QsWAGb1pNhM2BotmZrKSfuEFGe1bWDtKF9Qz29rCEBq"), // prout
 		[]byte("prout"),
 		[]byte("secret"),
 		nil,
@@ -166,7 +166,7 @@ var vectorCompatibility = []struct {
 	{ // masked, key'd and valid
 		Argon2idDefault,
 		true,
-		[]byte("$2id$yapnlBLmLVowNBPO.LJhGu$QsWAGb1pNhM2BotmZrKSfuEFGe1bWDtKF9Qz29rCEBq"), // prout
+		[]byte("$argon2id$yapnlBLmLVowNBPO.LJhGu$QsWAGb1pNhM2BotmZrKSfuEFGe1bWDtKF9Qz29rCEBq"), // prout
 		[]byte("prout"),
 		[]byte("ssecret"), // invalid
 		ErrMismatch,
@@ -174,7 +174,7 @@ var vectorCompatibility = []struct {
 	{ // masked, key'd and valid
 		Argon2idDefault,
 		true,
-		[]byte("$2id$yapnlBLmLVowNBPO.LJhGu$QsWAGb1pNhM2BotmZrKSfuEFGe1bWDtKF9Qz29rCEBq"), // prout
+		[]byte("$argon2id$yapnlBLmLVowNBPO.LJhGu$QsWAGb1pNhM2BotmZrKSfuEFGe1bWDtKF9Qz29rCEBq"), // prout
 		[]byte("pprout"), // invalid
 		[]byte("secret"),
 		ErrMismatch,
@@ -182,7 +182,7 @@ var vectorCompatibility = []struct {
 	{ // masked, key'd and valid
 		Argon2idDefault,
 		false, // invalid
-		[]byte("$2id$yapnlBLmLVowNBPO.LJhGu$QsWAGb1pNhM2BotmZrKSfuEFGe1bWDtKF9Qz29rCEBq"), // prout
+		[]byte("$argon2id$yapnlBLmLVowNBPO.LJhGu$QsWAGb1pNhM2BotmZrKSfuEFGe1bWDtKF9Qz29rCEBq"), // prout
 		[]byte("prout"),
 		[]byte("secret"),
 		ErrMismatch,
@@ -549,7 +549,7 @@ func ExampleNewCustom() {
 }
 
 func ExampleCompare() {
-	hashedPassword := []byte("$2id$aiOE.rPFUFkkehxc6utWY.$1$65536$8$32$Wv1IMP6xwaqVaQGOX6Oxe.eSEbozeRJLzln8ZlthZfS")
+	hashedPassword := []byte("$argon2id$aiOE.rPFUFkkehxc6utWY.$1$65536$8$32$Wv1IMP6xwaqVaQGOX6Oxe.eSEbozeRJLzln8ZlthZfS")
 	err := Compare(hashedPassword, []byte("prout"))
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
@@ -559,7 +559,7 @@ func ExampleCompare() {
 }
 
 func ExampleProfile_Compare() {
-	hashedPassword := []byte("$2id$PEKC7uef8j09Tx8WHKrpwu$e1ZINFSkJz4/hM0mytQCjrEmVRRb6VtkXwAZibZhgYm")
+	hashedPassword := []byte("$argon2id$PEKC7uef8j09Tx8WHKrpwu$e1ZINFSkJz4/hM0mytQCjrEmVRRb6VtkXwAZibZhgYm")
 	p, err := NewMasked(Argon2idDefault)
 	if err != nil {
 		panic(err)

@@ -20,8 +20,8 @@ const (
 )
 
 const (
-	idArgon2i  = "2i"
-	idArgon2id = "2id"
+	idArgon2i  = "argon2i"
+	idArgon2id = "argon2id"
 )
 
 var (
